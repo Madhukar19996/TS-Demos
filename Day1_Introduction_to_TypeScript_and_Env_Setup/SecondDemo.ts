@@ -1,0 +1,1 @@
+console.log("Running this code without creating js file .We use typescript executor")
