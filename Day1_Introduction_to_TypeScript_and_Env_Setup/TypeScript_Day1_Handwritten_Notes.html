@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 1 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7;
+    --paper2:#fffef9;
+    --rule:#cfe0f2;
+    --margin:#f2b8c2;
+    --ink-navy:#1a3a6b;
+    --ink-red:#c0392b;
+    --ink-green:#1c7a4d;
+    --ink-mustard:#b8791a;
+    --ink-purple:#6c3483;
+    --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0;
+    --hl-pink:#ffd7e6;
+    --hl-blue:#cfe8ff;
+    --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8;
+    --sticky-pink:#ffd0de;
+    --sticky-blue:#cfe6ff;
+    --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:#e9e2d0;
+    font-family:'Patrick Hand', cursive;
+    color:#20304a;
+  }
+
+  .page{
+    max-width:980px;
+    margin:0 auto;
+    padding:0 0 60px 0;
+  }
+
+  /* ===== NOTEBOOK PAPER BACKGROUND ===== */
+  .sheet{
+    position:relative;
+    background:
+      linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 33px,
+        var(--rule) 34px
+      );
+    background-blend-mode:normal;
+    border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px;
+    margin: 26px 14px;
+    position:relative;
+  }
+  .sheet::before{ /* red margin line */
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:46px;
+    width:2px;
+    background: var(--margin);
+    opacity:0.7;
+  }
+  .sheet::after{ /* punch holes */
+    content:"";
+    position:absolute;
+    left:14px; top:40px; bottom:40px;
+    width:14px;
+    background-image:
+      radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y;
+    background-size: 14px 90px;
+    opacity:0.9;
+  }
+
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+
+  /* ===== TITLE SECTION ===== */
+  .title-sheet{
+    text-align:center;
+    padding: 34px 30px 30px 30px;
+  }
+  .title-sheet .kicker{
+    font-family:'Architects Daughter', cursive;
+    color:var(--ink-purple);
+    font-size:1.05rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+  }
+  .title-sheet h1{
+    font-size:3rem;
+    color:var(--ink-navy);
+    line-height:1.15;
+    margin-top:6px;
+    text-shadow: 2px 2px 0 rgba(26,58,107,0.08);
+  }
+  .title-sheet h1 span{
+    color:var(--ink-red);
+    text-decoration: underline wavy var(--ink-mustard) 3px;
+    text-underline-offset:6px;
+  }
+  .title-sheet .sub{
+    font-family:'Caveat', cursive;
+    font-size:1.6rem;
+    color:var(--ink-teal);
+    margin-top:10px;
+  }
+  .badges{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    margin-top:22px;
+  }
+  .badge{
+    font-family:'Patrick Hand', cursive;
+    font-size:0.95rem;
+    padding:6px 14px;
+    border-radius:20px;
+    border:2px dashed var(--ink-navy);
+    color:var(--ink-navy);
+    background: var(--hl-blue);
+    transform: rotate(-1.5deg);
+  }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+
+  .doodle-row{
+    display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85;
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .sec-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin: 6px 0 20px 0;
+  }
+  .sec-num{
+    font-family:'Kalam',cursive;
+    font-weight:700;
+    font-size:1.3rem;
+    color:#fff;
+    background: var(--ink-navy);
+    width:42px; height:42px;
+    border-radius:50% 50% 50% 8px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow);
+    flex-shrink:0;
+    transform: rotate(-4deg);
+  }
+  .sec-head h2{
+    font-size:1.85rem;
+    color:var(--ink-navy);
+    border-bottom:3px solid var(--hl-yellow);
+    padding-bottom:2px;
+  }
+
+  /* ===== HIGHLIGHT / INLINE MARKS ===== */
+  mark{
+    background: var(--hl-yellow);
+    padding:1px 5px;
+    border-radius:3px;
+    box-decoration-break: clone;
+  }
+  .hl-pink{ background:var(--hl-pink); }
+  .hl-blue{ background:var(--hl-blue); }
+  .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; }
+  .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;}
+  .purple{ color:var(--ink-purple); font-weight:700;}
+  .teal{color:var(--ink-teal); font-weight:700;}
+
+  p, li{ font-size:1.12rem; line-height:1.65; }
+
+  /* ===== CALLOUT BOXES ===== */
+  .box{
+    border:2.5px solid var(--ink-navy);
+    border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px;
+    padding:16px 20px;
+    margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px);
+    box-shadow: var(--shadow);
+    position:relative;
+  }
+  .box-title{
+    font-family:'Kalam',cursive;
+    font-weight:700;
+    font-size:1.1rem;
+    margin-bottom:6px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .box.def{ border-color:var(--ink-teal); }
+  .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; }
+  .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; }
+  .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;}
+  .box.trick .box-title{ color:var(--ink-purple); }
+
+  /* ===== STICKY NOTES ===== */
+  .sticky-wrap{
+    display:flex; flex-wrap:wrap; gap:18px; margin:20px 0;
+  }
+  .sticky{
+    font-family:'Caveat', cursive;
+    font-size:1.25rem;
+    line-height:1.35;
+    padding:16px 16px 22px 16px;
+    width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22);
+    position:relative;
+  }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f);
+    box-shadow:0 2px 3px rgba(0,0,0,0.4);
+  }
+
+  /* ===== TABLES ===== */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:16px 0;
+    font-family:'Patrick Hand', cursive;
+    font-size:1.05rem;
+  }
+  th{
+    background: var(--ink-navy);
+    color:#fff;
+    font-family:'Kalam',cursive;
+    padding:10px 12px;
+    text-align:left;
+    border:2px solid var(--ink-navy);
+  }
+  td{
+    padding:9px 12px;
+    border:2px solid #b9c9de;
+  }
+  tr:nth-child(even) td{ background: #f2f7ff; }
+  tr:nth-child(odd) td{ background: #ffffff; }
+
+  code, .code{
+    font-family: 'Courier New', monospace;
+    background:#12213c;
+    color:#7cffb2;
+    padding:2px 7px;
+    border-radius:4px;
+    font-size:0.95rem;
+  }
+  .codeblock{
+    font-family:'Courier New', monospace;
+    background:#12213c;
+    color:#dbe8ff;
+    padding:14px 18px;
+    border-radius:10px;
+    margin:14px 0;
+    box-shadow: var(--shadow);
+    font-size:0.95rem;
+    line-height:1.55;
+    overflow-x:auto;
+    border-left: 5px solid var(--hl-yellow);
+  }
+  .codeblock .c1{ color:#7cffb2; }
+  .codeblock .c2{ color:#ffb86c; }
+  .codeblock .c3{ color:#8ecfff; }
+  .codeblock .cm{ color:#7a8bab; }
+
+  /* ===== FLOW / MIND MAP ===== */
+  .flow{
+    display:flex; align-items:center; justify-content:center;
+    flex-wrap:wrap; gap:6px; margin:22px 0;
+  }
+  .flow-box{
+    font-family:'Kalam',cursive;
+    font-size:1rem;
+    padding:12px 16px;
+    border:2.5px solid var(--ink-navy);
+    border-radius:10px;
+    background:#fff;
+    box-shadow: var(--shadow);
+    text-align:center;
+    min-width:120px;
+  }
+  .flow-box.alt{ border-color:var(--ink-green); color:var(--ink-green); }
+  .flow-box.warn2{ border-color:var(--ink-red); color:var(--ink-red); }
+  .flow-arrow{
+    font-size:1.6rem;
+    color:var(--ink-mustard);
+    font-family:'Kalam',cursive;
+  }
+
+  .mindmap{
+    display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0;
+  }
+  .mindmap .core{
+    font-family:'Kalam',cursive;
+    background: var(--ink-navy);
+    color:#fff;
+    padding:14px 26px;
+    border-radius:50px;
+    font-size:1.2rem;
+    box-shadow:var(--shadow);
+  }
+  .mindmap .branches{
+    display:flex; gap:16px; margin-top:14px; flex-wrap:wrap; justify-content:center;
+  }
+  .mindmap .branch{
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{
+    font-family:'Patrick Hand', cursive;
+    background:#fff;
+    border:2px solid var(--ink-teal);
+    color:var(--ink-teal);
+    border-radius:10px;
+    padding:8px 14px;
+    margin-top:4px;
+    font-size:0.95rem;
+    text-align:center;
+    width:150px;
+  }
+
+  /* ===== TWO COLUMN ===== */
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; }
+  .cols > div{ flex:1; min-width:260px; }
+
+  .divider{
+    border:none;
+    height:3px;
+    background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px);
+    margin:34px 0;
+  }
+
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{
+    padding-left:32px;
+    position:relative;
+    margin-bottom:8px;
+  }
+  .checklist li::before{
+    content:"✔";
+    position:absolute; left:0; top:0;
+    color:#fff;
+    background:var(--ink-green);
+    width:22px; height:22px;
+    border-radius:5px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem;
+    transform: rotate(-6deg);
+  }
+
+  .exam-trick{
+    background: linear-gradient(100deg, #fff2f2, #fff9e8);
+    border:3px dashed var(--ink-red);
+    border-radius:14px;
+    padding:16px 20px;
+    margin:18px 0;
+    box-shadow:var(--shadow);
+  }
+  .exam-trick .box-title{ color:var(--ink-red); }
+  .exam-trick .box-title::before{ content:"⚡"; }
+
+  .compare-badge{
+    display:inline-block;
+    padding:2px 10px;
+    border-radius:6px;
+    font-family:'Kalam',cursive;
+    font-size:0.9rem;
+  }
+  .badge-js{ background:#ffe1e1; color:var(--ink-red); border:1.5px solid var(--ink-red);}
+  .badge-ts{ background:#e1f0ff; color:var(--ink-navy); border:1.5px solid var(--ink-navy);}
+
+  /* ===== FINAL MEMORY SHEET ===== */
+  .memsheet{
+    background: linear-gradient(var(--paper2), #fffaf0);
+    border:4px double var(--ink-navy);
+  }
+  .mem-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{
+    border:2px solid #ccc;
+    border-left:6px solid var(--ink-teal);
+    border-radius:6px;
+    padding:12px 16px;
+    background:#fff;
+  }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+
+  .footer-note{
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-size:1.4rem;
+    color:var(--ink-purple);
+    margin: 30px 0 10px 0;
+  }
+
+  .tape{
+    position:absolute;
+    width:70px; height:24px;
+    background: rgba(255,244,150,0.7);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; }
+    .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE SECTION ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 1</span></h1>
+    <div class="sub">Introduction • Type Safety • Environment Setup — from scratch to first run 🚀</div>
+    <div class="badges">
+      <span class="badge">📘 What is TS?</span>
+      <span class="badge">🛡️ Type Safety</span>
+      <span class="badge">⚙️ Node + TSC + VS Code</span>
+      <span class="badge">⚡ tsx executor</span>
+      <span class="badge">🖥️ First Program</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS TYPESCRIPT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is TypeScript?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p><mark class="hl-yellow"><b>TypeScript = SUPERSET of JavaScript</b></mark> — built by <span class="navy">Microsoft</span>.
+      Every JS feature works in TS, <span class="u">PLUS</span> extra powers: arrow functions, generics, strict data types, full OOP.</p>
+    </div>
+
+    <div class="mindmap">
+      <div class="core">TypeScript</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf">Superset of JS<br>(all JS features included)</div></div>
+        <div class="branch"><div class="stem">↓</div><div class="leaf">Made by Microsoft</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf">Compiles → plain JS<br>(runs anywhere JS runs)</div></div>
+      </div>
+    </div>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky yellow"><div class="pin"></div><b>Memory Trick 🧠</b><br>"Type-Safe Script" = Type + Script → TypeScript!</div>
+      <div class="sticky blue"><div class="pin"></div>File ext: <b>.ts</b> → compiles to <b>.js</b> → runs via Node</div>
+    </div>
+  </div>
+
+  <!-- ============ 2. WORKFLOW ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>TS → JS Workflow (How It Runs)</h2></div>
+
+    <div class="flow">
+      <div class="flow-box">✍️ Write Code<br><span class="code" style="background:#eef3ff;color:#1a3a6b;">.ts file</span></div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">⚙️ Compile<br>(TSC)</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">📄 Generates<br><span class="code" style="background:#eef3ff;color:#1a3a6b;">.js file</span></div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">▶️ Run<br>(node file.js)</div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Shortcut Route (No Compilation!)</div>
+      <p>Install <span class="purple">tsx</span> (TypeScript eXecutor) → run <code>tsx file.ts</code> directly.
+      <span class="imp">No .js file is generated</span> — saves the 2-step process into 1! ⭐ <span class="u">Most used in daily practice.</span></p>
+    </div>
+
+    <table>
+      <tr><th>Step</th><th>Traditional Route</th><th>Fast Route (tsx)</th></tr>
+      <tr><td>1</td><td>Write .ts file</td><td>Write .ts file</td></tr>
+      <tr><td>2</td><td>Compile: <code>tsc file.ts</code></td><td>Run directly: <code>tsx file.ts</code></td></tr>
+      <tr><td>3</td><td>Run: <code>node file.js</code></td><td>✅ Output shown instantly</td></tr>
+    </table>
+  </div>
+
+  <!-- ============ 3. TYPE SAFETY ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>Why TypeScript? → Type Safety 🛡️</h2></div>
+
+    <p><span class="imp">Most Important Concept of Day 1!</span> This is the core reason TypeScript exists.</p>
+
+    <div class="cols">
+      <div>
+        <div class="box warn">
+          <div class="box-title">❌ JavaScript — Dynamically Typed</div>
+          <p>No fixed data type. Variable type can change anytime → <mark class="hl-pink">NO type safety</mark>.</p>
+          <div class="codeblock">
+<span class="cm">// JavaScript</span><br>
+<span class="c3">let</span> x = 20;      <span class="cm">// x is a number</span><br>
+x = "John";   <span class="cm">// ✅ allowed! now x is a string</span><br>
+<span class="cm">// no error — bug caught only at RUNTIME</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="box tip">
+          <div class="box-title">✅ TypeScript — Statically Typed</div>
+          <p>Once a variable's type is fixed, it <span class="u">cannot change</span> → <mark class="hl-green">Type Safety guaranteed</mark>.</p>
+          <div class="codeblock">
+<span class="cm">// TypeScript</span><br>
+<span class="c3">let</span> x = 20;      <span class="cm">// x locked as number</span><br>
+x = "John";   <span class="c2">// ❌ Compile Error!</span><br>
+<span class="cm">// Type 'string' not assignable to 'number'</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Exam Point — Compile Time vs Runtime</div>
+      <p><span class="badge-js compare-badge">JavaScript</span> → errors found only at <span class="imp">RUNTIME</span> (while executing).<br>
+      <span class="badge-ts compare-badge">TypeScript</span> → errors caught at <span class="green" style="font-weight:700;">COMPILE TIME</span> (while writing/compiling) — bugs caught <span class="u">early</span>!</p>
+    </div>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky orange"><div class="pin"></div>Re-declaring with <b>let</b> twice? ❌ Not allowed in TS!</div>
+      <div class="sticky pink"><div class="pin"></div><b>Assignment</b> (same type) is fine.<br><b>Re-declaration</b> (new type) is NOT.</div>
+    </div>
+
+    <div class="box trick">
+      <div class="box-title">💡 Why This Matters for QA Automation</div>
+      <p>Type safety = fewer runtime surprises in your <span class="teal">Playwright / Selenium automation scripts</span> → easier to maintain large test frameworks & find defects early.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. ENVIRONMENT SETUP OVERVIEW ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>Environment Setup — 3 (+1) Must-Haves</h2></div>
+
+    <div class="flow">
+      <div class="flow-box">🟢 Node.js<br><span style="font-size:0.8rem;">Runtime for JS</span></div>
+      <div class="flow-arrow">+</div>
+      <div class="flow-box alt">🔧 TSC<br><span style="font-size:0.8rem;">Compiler: TS→JS</span></div>
+      <div class="flow-arrow">+</div>
+      <div class="flow-box warn2">🖥️ VS Code<br><span style="font-size:0.8rem;">Editor / IDE</span></div>
+      <div class="flow-arrow">+</div>
+      <div class="flow-box" style="border-color:var(--ink-purple);color:var(--ink-purple);">⚡ tsx<br><span style="font-size:0.8rem;">(Optional) direct run</span></div>
+    </div>
+
+    <table>
+      <tr><th>Tool</th><th>Analogy</th><th>Role</th></tr>
+      <tr><td>Node.js</td><td>Like JRE for Java</td><td>Provides runtime to <span class="navy">execute JavaScript</span></td></tr>
+      <tr><td>TypeScript Compiler (tsc)</td><td>Like javac for Java</td><td>Converts <code>.ts</code> → <code>.js</code></td></tr>
+      <tr><td>VS Code</td><td>Like Eclipse for Java</td><td>Editor to <span class="navy">write</span> the code</td></tr>
+      <tr><td>tsx (executor)</td><td>Shortcut tool</td><td>Runs <code>.ts</code> directly — <span class="green" style="font-weight:700;">no compile step</span></td></tr>
+    </table>
+
+    <div class="sticky yellow" style="margin:14px auto;"><div class="pin"></div>🚫 <b>Playwright is NOT part of today's setup</b> — that comes later!</div>
+  </div>
+
+  <!-- ============ 5. FORMULA / SHORTCUT ZONE — COMMANDS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>⚡ Formula & Command Shortcut Zone</h2></div>
+    <p>All the terminal commands you'll ever need for Day 1 — <span class="imp">memorize this box!</span></p>
+
+    <div class="codeblock">
+<span class="cm">// ---- VERIFY INSTALLATIONS ----</span><br>
+node -v              <span class="cm">// check Node.js version</span><br>
+node --version        <span class="cm">// alternate command</span><br>
+npm -v                <span class="cm">// check npm (Node Package Manager)</span><br>
+tsc --version          <span class="cm">// check TypeScript compiler version</span><br><br>
+
+<span class="cm">// ---- INSTALL TOOLS (via npm) ----</span><br>
+npm install -g typescript     <span class="cm">// install TypeScript compiler</span><br>
+npm install -g tsx              <span class="cm">// install TypeScript executor</span><br><br>
+
+<span class="cm">// ---- COMPILE & RUN (traditional) ----</span><br>
+tsc Day1/FirstDemo.ts    <span class="cm">// compile → generates FirstDemo.js</span><br>
+node Day1/FirstDemo.js   <span class="cm">// run the JS output</span><br><br>
+
+<span class="cm">// ---- RUN DIRECTLY (fast way) ----</span><br>
+tsx Day1/FirstDemo.ts    <span class="cm">// runs .ts directly, no .js created ⭐</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Fix for the #1 Beginner Error</div>
+      <p>Error: <mark class="hl-pink">"cannot be loaded because running scripts is disabled on this system"</mark></p>
+      <div class="codeblock">set-executionpolicy -scope currentuser -executionpolicy remotesigned</div>
+      <p>Run this <span class="u">once</span> in the terminal → then <code>tsc</code> works forever after. 🔑</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">⌨️ VS Code Shortcut</div>
+      <p>Open terminal instantly: <mark class="hl-blue">Ctrl + `</mark> (backtick) &nbsp;|&nbsp; Increase/decrease font: <mark class="hl-blue">Ctrl +/-</mark> (Mac: Cmd +/-)</p>
+    </div>
+  </div>
+
+  <!-- ============ 6. CONCEPT MAP: FULL SETUP FLOWCHART ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🗺️ Concept Map — Full Setup Flow</h2></div>
+
+    <div class="flow">
+      <div class="flow-box">1️⃣ Download<br>& Install Node.js<br>(LTS version)</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">2️⃣ Verify<br><code style="background:#eef3ff;color:#1a3a6b;">node -v</code></div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box alt">3️⃣ Install TSC<br>via npm</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box alt">4️⃣ Install tsx<br>(optional, recommended)</div>
+    </div>
+    <div class="flow">
+      <div class="flow-box warn2">5️⃣ Download &<br>Install VS Code</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">6️⃣ Open Folder<br>in VS Code</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box">7️⃣ Create<br><code style="background:#eef3ff;color:#1a3a6b;">.ts</code> file</div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-box" style="border-color:var(--ink-purple);color:var(--ink-purple);">8️⃣ Compile / Run<br>🎉 Output!</div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">🧭 PATH Variable Setup (only if <code>node</code> not recognized)</div>
+      <p>Right-click <b>This PC</b> → Properties → Advanced System Settings → Environment Variables → select <b>Path</b> → Edit → Add:</p>
+      <ul class="checklist">
+        <li><code>C:\Program Files\nodejs</code></li>
+        <li>Node global modules path (npm folder)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 7. IMPORTANT EXAMPLES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>📌 Important Worked Example</h2></div>
+
+    <p>Complete journey: creating and running your <span class="imp">first TypeScript program</span>.</p>
+
+    <div class="box def">
+      <div class="box-title">Step-by-Step</div>
+      <ul class="checklist">
+        <li>Create folder <code>TS_Demos</code> → open in VS Code (<code>File → Open Folder</code>)</li>
+        <li>Create subfolder <code>Day1</code> → new file <code>FirstDemo.ts</code></li>
+        <li>Write the code (see below)</li>
+        <li>Enable <b>Auto Save</b> (<code>File → Auto Save</code>) — unsaved changes show a <b>● dot</b> on the tab</li>
+        <li>Open terminal → <code>Ctrl + `</code></li>
+        <li>Run using <code>tsc</code>+<code>node</code> OR directly with <code>tsx</code></li>
+      </ul>
+    </div>
+
+    <div class="codeblock">
+<span class="cm">// FirstDemo.ts</span><br>
+console.log(<span class="c1">"Welcome to TypeScript"</span>);
+    </div>
+
+    <div class="cols">
+      <div class="box">
+        <div class="box-title">🖨️ Print Statement — Language Comparison</div>
+        <table>
+          <tr><th>Language</th><th>Print Command</th></tr>
+          <tr><td>Java</td><td><code>System.out.println()</code></td></tr>
+          <tr><td>Python</td><td><code>print()</code></td></tr>
+          <tr><td>TS / JS</td><td><code>console.log()</code></td></tr>
+        </table>
+      </div>
+      <div class="box tip">
+        <div class="box-title">✅ Expected Output</div>
+        <div class="codeblock">Welcome to TypeScript</div>
+        <p style="margin-top:4px;">Same output whether you run via <code>node</code> (after compiling) or directly via <code>tsx</code>! 🎯</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 8. EXAM TRICK BOXES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Superset" Question</div>
+      <p>If asked <i>"Is all valid JS code also valid TS code?"</i> → <span class="imp">YES</span> (because TS is a superset). But reverse is <span class="imp">not always true</span> (TS has extra syntax JS doesn't understand).</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — Compile-time vs Run-time</div>
+      <p>Interviewers love asking: <i>"Where does TypeScript catch errors?"</i> → Answer: <mark class="hl-yellow"><b>Compile time</b></mark>, not runtime. This is the #1 reason to prefer TS in automation frameworks.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — File Extensions</div>
+      <p><code>.ts</code> = TypeScript source &nbsp;|&nbsp; <code>.js</code> = compiled JavaScript output. Never confuse which one you <i>write</i> vs which one you <i>run via node</i>.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — npm's Real Role</div>
+      <p><b>npm</b> (Node Package Manager) comes bundled with Node.js — it's the tool used to install <i>everything else</i> (TypeScript compiler, tsx, Playwright, etc.) via <code>npm install -g &lt;package&gt;</code>.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. QUICK REVISION SUMMARY ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div><b>TS</b> = JS + extra features + type safety, by Microsoft</div>
+      <div class="sticky blue"><div class="pin"></div>Write <b>.ts</b> → compile with <b>tsc</b> → get <b>.js</b> → run with <b>node</b></div>
+      <div class="sticky pink"><div class="pin"></div>JS = dynamic typing (no safety) <br>TS = static typing (type safety)</div>
+      <div class="sticky orange"><div class="pin"></div>Skip compiling: install & use <b>tsx</b> to run <b>.ts</b> directly</div>
+      <div class="sticky yellow"><div class="pin"></div>3 Musts: <b>Node.js + TSC + VS Code</b></div>
+      <div class="sticky blue"><div class="pin"></div>TS errors caught at <b>compile time</b>, JS errors only at <b>runtime</b></div>
+    </div>
+  </div>
+
+  <!-- ============ 10. FINAL ONE-PAGE MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>🧩 Core Definition</h4>
+        <p style="margin:0;">TypeScript = Superset of JavaScript (Microsoft). Adds type safety + extra features. Compiles to plain JS.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🛡️ Type Safety</h4>
+        <p style="margin:0;">JS = dynamic (type can change, no safety). TS = static (type locked, errors caught at <b>compile time</b>).</p>
+      </div>
+      <div class="mem-block">
+        <h4>⚙️ Setup Trio</h4>
+        <p style="margin:0;">Node.js (runtime) + TSC (compiler) + VS Code (editor). Optional 4th: tsx (direct execution).</p>
+      </div>
+      <div class="mem-block">
+        <h4>💻 Key Commands</h4>
+        <p style="margin:0;"><code>node -v</code> · <code>npm -v</code> · <code>npm install -g typescript</code> · <code>npm install -g tsx</code> · <code>tsc file.ts</code> · <code>node file.js</code> · <code>tsx file.ts</code></p>
+      </div>
+      <div class="mem-block">
+        <h4>🔥 Common Error Fix</h4>
+        <p style="margin:0;">"Running scripts disabled" → run <code>set-executionpolicy -scope currentuser -executionpolicy remotesigned</code> once.</p>
+      </div>
+      <div class="mem-block">
+        <h4>📂 First Program Flow</h4>
+        <p style="margin:0;">New folder → Open in VS Code → New <code>.ts</code> file → <code>console.log("...")</code> → Auto Save ON → Terminal (<code>Ctrl+`</code>) → Run.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Write in TS, compile to JS, run with Node — or skip it all with tsx!" ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 1 Notes • Next up: Variables, Data Types, Operators, Arrays & Strings in TypeScript 📚 —</div>
+
+</div>
+</body>
+</html>
