@@ -1,8 +1,8 @@
 // Variable : container which can hold/store some data
 
-// x=10 
+//x=10 
 
-// studentName="Madhukar"
+//studentName="Madhukar"
 
 
 // var, let ,const 

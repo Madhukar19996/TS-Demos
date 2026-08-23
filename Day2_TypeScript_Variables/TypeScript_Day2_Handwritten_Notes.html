@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 2 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7;
+    --paper2:#fffef9;
+    --rule:#cfe0f2;
+    --margin:#f2b8c2;
+    --ink-navy:#1a3a6b;
+    --ink-red:#c0392b;
+    --ink-green:#1c7a4d;
+    --ink-mustard:#b8791a;
+    --ink-purple:#6c3483;
+    --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0;
+    --hl-pink:#ffd7e6;
+    --hl-blue:#cfe8ff;
+    --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8;
+    --sticky-pink:#ffd0de;
+    --sticky-blue:#cfe6ff;
+    --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+
+  .sheet{
+    position:relative;
+    background:
+      linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal;
+    border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px;
+    margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; }
+  .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;}
+  .purple{ color:var(--ink-purple); font-weight:700;}
+  .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+
+  .flow{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:22px 0; }
+  .flow-box{ font-family:'Kalam',cursive; font-size:1rem; padding:12px 16px; border:2.5px solid var(--ink-navy); border-radius:10px;
+    background:#fff; box-shadow: var(--shadow); text-align:center; min-width:120px; }
+  .flow-box.alt{ border-color:var(--ink-green); color:var(--ink-green); }
+  .flow-box.warn2{ border-color:var(--ink-red); color:var(--ink-red); }
+  .flow-arrow{ font-size:1.6rem; color:var(--ink-mustard); font-family:'Kalam',cursive; }
+
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:16px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 14px; margin-top:4px; font-size:0.95rem; text-align:center; width:150px; }
+
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:18px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:220px; }
+
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+
+  .crosslist{ list-style:none; padding-left:0; }
+  .crosslist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .crosslist li::before{ content:"✘"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-red);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; transform: rotate(-6deg); }
+
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+
+  .keycard{
+    border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); flex:1; min-width:230px;
+  }
+  .keycard h3{ font-size:1.3rem; margin-bottom:8px; }
+  .keycard.k-var{ background:#fff0ee; border:3px solid var(--ink-red); } .keycard.k-var h3{ color:var(--ink-red); }
+  .keycard.k-let{ background:#eef7ff; border:3px solid var(--ink-navy); } .keycard.k-let h3{ color:var(--ink-navy); }
+  .keycard.k-const{ background:#eefaf1; border:3px solid var(--ink-green); } .keycard.k-const h3{ color:var(--ink-green); }
+  .keycard ul{ padding-left:20px; margin:6px 0; }
+  .keycard li{ font-size:1rem; margin-bottom:4px; }
+
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+
+  .kbd{ font-family:'Courier New',monospace; background:#eef2fa; border:1.5px solid #9fb3d1; border-bottom-width:3px;
+    border-radius:5px; padding:1px 8px; font-size:0.92rem; color:#1a3a6b; }
+
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; }
+    .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 2</span></h1>
+    <div class="sub">Comments • Variables • var vs let vs const — the 5-point battle 🥊</div>
+    <div class="badges">
+      <span class="badge">💬 Comments & Shortcuts</span>
+      <span class="badge">📦 What is a Variable?</span>
+      <span class="badge">🔑 var / let / const</span>
+      <span class="badge">🧭 Scope</span>
+      <span class="badge">🕳️ Hoisting</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. COMMENTS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>Comments in TypeScript</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Why Comments?</div>
+      <p>Two purposes: <mark class="hl-yellow"><b>improve readability</b></mark> (explain your code to others) and <mark class="hl-blue"><b>disable code temporarily</b></mark> without deleting it.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box">
+        <div class="box-title">✏️ Single-Line Comment</div>
+        <div class="codeblock"><span class="cm">// this line won't execute</span><br>console.log("Welcome");</div>
+        <p>Shortcut (Windows): <span class="kbd">Ctrl + /</span> &nbsp; | &nbsp; Mac: <span class="kbd">Cmd + /</span></p>
+      </div>
+      <div class="box">
+        <div class="box-title">✏️ Multi-Line Comment</div>
+        <div class="codeblock"><span class="cm">/* this whole<br>block is<br>commented */</span></div>
+        <p>Shortcut (Windows): <span class="kbd">Shift + Alt + A</span> &nbsp; | &nbsp; Mac: <span class="kbd">Shift + Option + A</span></p>
+      </div>
+    </div>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky yellow"><div class="pin"></div><b>Same shortcut</b> comments AND uncomments — just toggle it! 🔁</div>
+      <div class="sticky blue"><div class="pin"></div>Semicolon <b>optional</b> in TS/JS — unlike Java's mandatory <code style="background:#12213c;">;</code></div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">VS Code Only!</div>
+      <p>These shortcuts are <span class="imp">VS Code specific</span> — Eclipse or other IDEs use different key combos.</p>
+    </div>
+  </div>
+
+  <!-- ============ 2. WHAT IS A VARIABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>What is a Variable?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A variable is a <mark class="hl-yellow"><b>container that can hold / store some data</b></mark>.</p>
+      <div class="codeblock">let x = 10;   <span class="cm">// x → variable, 10 → value</span></div>
+    </div>
+
+    <div class="mindmap">
+      <div class="core">Naming a Variable</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf">Use meaningful names<br>e.g. studentName, not just "s"</div></div>
+        <div class="branch"><div class="stem">↓</div><div class="leaf">Prefer lowercase<br>(camelCase standard)</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf">Files/folders →<br>start with Uppercase (convention)</div></div>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">🧾 Full Syntax (with data type — optional)</div>
+      <div class="codeblock">keyword variableName : dataType = value;<br><br>
+<span class="cm">// example</span><br>
+let age : number = 30;</div>
+      <p><mark class="hl-green">Data type is OPTIONAL</mark> in TS/JS — you can also write:</p>
+      <div class="codeblock">keyword variableName = value;<br><br><span class="cm">// example</span><br>let age = 30;</div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Printing a Variable — Common Beginner Mistake</div>
+      <p><code>console.log("age")</code> → prints the <span class="imp">literal string</span> "age".<br>
+      <code>console.log(age)</code> → prints the <span class="green" style="font-weight:700;">variable's value</span> (30). No quotes for variables!</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. THE THREE KEYWORDS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>The 3 Keywords: var, let, const</h2></div>
+
+    <p>TS/JS give us <b>3 ways</b> to declare a variable. Golden rule for when to use which:</p>
+
+    <div class="cols3">
+      <div class="keycard k-var">
+        <h3>🚫 var</h3>
+        <ul>
+          <li>AVOID in modern TS/JS</li>
+          <li>Function-scoped → unpredictable</li>
+          <li>Allows redeclaration (breaks type safety)</li>
+        </ul>
+      </div>
+      <div class="keycard k-let">
+        <h3>🔁 let</h3>
+        <ul>
+          <li>Use when value <b>keeps changing</b></li>
+          <li>Block-scoped ✅</li>
+          <li>No redeclaration, but reassignment OK</li>
+        </ul>
+      </div>
+      <div class="keycard k-const">
+        <h3>🔒 const</h3>
+        <ul>
+          <li>Use when value <b>never changes</b></li>
+          <li>Block-scoped ✅</li>
+          <li>Must initialize at declaration; no reassignment</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky pink"><div class="pin"></div><b>Memory Trick 🧠</b><br>"<b>c</b>onst = <b>c</b>onstant = <b>c</b>an't change"</div>
+      <div class="sticky orange"><div class="pin"></div><b>let</b> = value keeps "<b>let</b>ting go" and changing 😄</div>
+    </div>
+  </div>
+
+  <!-- ============ 4. ASPECT 1 — SCOPE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>Battle Round 1️⃣ — Scope</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Scope = Accessible / Visible Area</div>
+      <p>TS/JS has only <b>2 types of scope</b>: <span class="navy">Functional Scope</span> and <span class="teal">Block Scope</span>.</p>
+    </div>
+
+    <div class="flow">
+      <div class="flow-box warn2">var<br><span style="font-size:0.8rem;">Functional Scope</span></div>
+      <div class="flow-arrow">vs</div>
+      <div class="flow-box alt">let / const<br><span style="font-size:0.8rem;">Block Scope</span></div>
+    </div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">❌ var — Functional Scope</div>
+        <div class="codeblock">
+function whereScope() {<br>
+&nbsp;&nbsp;if (true) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;var msg = "Hello World";<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;console.log(msg); <span class="cm">// ✅ works!</span><br>
+}
+        </div>
+        <p>Accessible <span class="u">anywhere inside the function</span> — even outside the <code>if</code> block. This causes unexpected bugs!</p>
+      </div>
+      <div class="box tip">
+        <div class="box-title">✅ let/const — Block Scope</div>
+        <div class="codeblock">
+function blockScope() {<br>
+&nbsp;&nbsp;if (true) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;let msg = "Hello";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(msg); <span class="cm">// ✅ inside block</span><br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;console.log(msg); <span class="c2">// ❌ Error! out of scope</span><br>
+}
+        </div>
+        <p>Only accessible <span class="u">within the { } block</span> it was created in.</p>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">3-Variable Test</div>
+      <div class="codeblock">
+if (true) {<br>
+&nbsp;&nbsp;var num1 = 10;  let num2 = 20;  const num3 = 30;<br>
+}<br>
+console.log(num1); <span class="c1">// ✅ 10 (functional scope)</span><br>
+console.log(num2); <span class="c2">// ❌ Error (block scope)</span><br>
+console.log(num3); <span class="c2">// ❌ Error (block scope)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5. ASPECT 2 — DECLARATION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>Battle Round 2️⃣ — Declaration & Value Assignment</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Declaration vs Initialization</div>
+      <p><span class="navy">Declaration</span> = just naming the variable (no value).<br>
+      <span class="teal">Initialization</span> = assigning a value to it.</p>
+    </div>
+
+    <table>
+      <tr><th>Keyword</th><th>Can declare WITHOUT initializing?</th><th>Value if printed uninitialized</th></tr>
+      <tr><td>var</td><td class="yes">✅ Yes</td><td><code>undefined</code></td></tr>
+      <tr><td>let</td><td class="yes">✅ Yes</td><td><code>undefined</code></td></tr>
+      <tr><td>const</td><td class="no">❌ No — must assign value at declaration</td><td>Compile Error</td></tr>
+    </table>
+
+    <div class="codeblock">
+<span class="cm">// var & let — OK</span><br>
+var x;  console.log(x);   <span class="cm">// undefined</span><br>
+x = 30; console.log(x);   <span class="cm">// 30</span><br><br>
+<span class="cm">// const — NOT OK</span><br>
+const jed;  <span class="c2">// ❌ Error: must be initialized</span><br>
+const jed = 50;  <span class="c1">// ✅ correct</span>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div>TS assigns type <b>any</b> to a variable declared with no value & no type!</div>
+  </div>
+
+  <!-- ============ 6. ASPECT 3 — REDECLARATION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>Battle Round 3️⃣ — Redeclaration</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Redeclaration</div>
+      <p>Declaring the <span class="u">same variable name again</span> in the same scope.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">❌ var — Redeclaration ALLOWED</div>
+        <div class="codeblock">
+var city = "New York";<br>
+var city = "Los Angeles"; <span class="c1">// ✅ allowed</span><br>
+console.log(city); <span class="cm">// Los Angeles</span>
+        </div>
+        <p>This is exactly why <span class="imp">var breaks type safety</span> — same variable, silently overwritten.</p>
+      </div>
+      <div class="box tip">
+        <div class="box-title">✅ let / const — Redeclaration BLOCKED</div>
+        <div class="codeblock">
+let country = "India";<br>
+let country = "US"; <span class="c2">// ❌ Error!</span><br>
+<span class="cm">Cannot redeclare block-scoped variable 'country'</span>
+        </div>
+        <p>Same error for <code>const</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 7. ASPECT 4 — REINITIALIZATION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>Battle Round 4️⃣ — Reinitialization (Reassignment)</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Reassignment</div>
+      <p>Changing the <span class="u">value</span> of an already-declared variable (not redeclaring the keyword).</p>
+    </div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">✅ var / let — Reassignment ALLOWED</div>
+        <div class="codeblock">
+let age = 25;<br>
+age = 30;  <span class="c1">// ✅ allowed</span><br>
+console.log(age); <span class="cm">// 30</span>
+        </div>
+      </div>
+      <div class="box warn">
+        <div class="box-title">❌ const — Reassignment BLOCKED</div>
+        <div class="codeblock">
+const age = 25;<br>
+age = 30;  <span class="c2">// ❌ Error!</span><br>
+<span class="cm">Cannot assign to 'age' — it is a constant</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Don't Confuse: Redeclaration vs Reassignment</div>
+      <p><b>Redeclaration</b> = writing the <span class="imp">keyword</span> again (<code>let x</code> twice) → blocked for let/const.<br>
+      <b>Reassignment</b> = just changing the <span class="green" style="font-weight:700;">value</span> (<code>x = newValue</code>) → allowed for let, blocked for const.</p>
+    </div>
+  </div>
+
+  <!-- ============ 8. ASPECT 5 — HOISTING ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>Battle Round 5️⃣ — Hoisting</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Hoisting</div>
+      <p>Accessing a variable <span class="u">BEFORE</span> it's declared/assigned in the code.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">var → returns <code>undefined</code></div>
+        <div class="codeblock">
+console.log(a);  <span class="cm">// undefined</span><br>
+var a = 10;<br>
+console.log(a);  <span class="cm">// 10</span>
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">let / const → Error ("not initialized")</div>
+        <div class="codeblock">
+console.log(b);  <span class="c2">// ❌ Cannot access before initialization</span><br>
+let b = 10;
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky pink" style="margin:10px auto;"><div class="pin"></div><b>Memory Trick 🧠</b><br>var = "silent undefined" 🤫 | let/const = "loud error" 📢</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. MASTER COMPARISON TABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🏆 Master Comparison Table</h2></div>
+
+    <table>
+      <tr><th>Aspect</th><th>var</th><th>let</th><th>const</th></tr>
+      <tr><td><b>Scope</b></td><td>Functional</td><td>Block</td><td>Block</td></tr>
+      <tr><td><b>Declaration w/o value?</b></td><td class="yes">✅ Optional</td><td class="yes">✅ Optional</td><td class="no">❌ Mandatory value</td></tr>
+      <tr><td><b>Redeclaration</b></td><td class="yes">✅ Allowed</td><td class="no">❌ Not allowed</td><td class="no">❌ Not allowed</td></tr>
+      <tr><td><b>Reinitialization</b></td><td class="yes">✅ Allowed</td><td class="yes">✅ Allowed</td><td class="no">❌ Not allowed</td></tr>
+      <tr><td><b>Hoisting behavior</b></td><td><code>undefined</code></td><td>Not initialized (error)</td><td>Not initialized (error)</td></tr>
+    </table>
+
+    <div class="exam-trick">
+      <div class="box-title">Why Avoid var? (2 Reasons — Interview Favorite!)</div>
+      <ul class="crosslist">
+        <li>Functional scope → causes <span class="imp">unexpected/unpredictable behavior</span> in loops & conditionals</li>
+        <li>Allows redeclaration → <span class="imp">breaks TypeScript's core promise of type safety</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ 10. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Can you redeclare a variable in TS?"</div>
+      <p>Depends on keyword! <span class="imp">var → Yes</span>, <span class="green" style="font-weight:700;">let/const → No</span>. Always specify which keyword when answering.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "What does console.log(x) print before declaration?"</div>
+      <p><code>var</code> → <code>undefined</code>. <code>let</code>/<code>const</code> → throws a <b>ReferenceError</b> (not initialized). Different outcomes — don't mix them up!</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Which keyword should never be used in modern TS?"</div>
+      <p>Answer: <code>var</code> — always mention BOTH reasons (functional scope + redeclaration) for full marks.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — Const ≠ Immutable Object (gotcha for later!)</div>
+      <p><code>const</code> prevents <i>reassigning</i> the variable itself — but if it holds an object/array, the object's <i>contents</i> can still change. (Preview for upcoming data-types class.)</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 11. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Comment: <b>Ctrl+/</b> (line), <b>Shift+Alt+A</b> (block)</div>
+      <div class="sticky blue"><div class="pin"></div>Variable = container that holds data</div>
+      <div class="sticky pink"><div class="pin"></div>3 keywords: <b>var</b> (avoid), <b>let</b> (changing), <b>const</b> (fixed)</div>
+      <div class="sticky orange"><div class="pin"></div>Scope: var=functional, let/const=block</div>
+      <div class="sticky yellow"><div class="pin"></div>var redeclare ✅ | let/const redeclare ❌</div>
+      <div class="sticky blue"><div class="pin"></div>const must init at declaration & can't reassign</div>
+      <div class="sticky pink"><div class="pin"></div>Hoisting: var→undefined | let/const→error</div>
+    </div>
+  </div>
+
+  <!-- ============ 12. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>💬 Comments</h4>
+        <p style="margin:0;"><code>//</code> single line, <code>/* */</code> multi-line. Same shortcut toggles comment/uncomment.</p>
+      </div>
+      <div class="mem-block">
+        <h4>📦 Variable Basics</h4>
+        <p style="margin:0;">Container for data. Syntax: <code>keyword name: type = value</code> — type is optional.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🧭 Scope</h4>
+        <p style="margin:0;">var = functional scope (whole function). let/const = block scope (only within { }).</p>
+      </div>
+      <div class="mem-block">
+        <h4>📝 Declaration</h4>
+        <p style="margin:0;">var/let → optional init. const → mandatory init at declaration.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔁 Redeclaration vs Reassignment</h4>
+        <p style="margin:0;">Redeclare: only var ✅. Reassign value: var & let ✅, const ❌.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🕳️ Hoisting</h4>
+        <p style="margin:0;">Access before declare → var: <code>undefined</code>. let/const: Error (not initialized).</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Avoid var. Let it change with let. Keep it constant with const." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 2 Notes • Next up: Data Types in TypeScript 📚 —</div>
+
+</div>
+</body>
+</html>
