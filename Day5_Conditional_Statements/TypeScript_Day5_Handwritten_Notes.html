@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 5 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .flow{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:22px 0; }
+  .flow-box{ font-family:'Kalam',cursive; font-size:1rem; padding:12px 16px; border:2.5px solid var(--ink-navy); border-radius:10px;
+    background:#fff; box-shadow: var(--shadow); text-align:center; min-width:110px; }
+  .flow-box.alt{ border-color:var(--ink-green); color:var(--ink-green); }
+  .flow-box.warn2{ border-color:var(--ink-red); color:var(--ink-red); }
+  .flow-arrow{ font-size:1.6rem; color:var(--ink-mustard); font-family:'Kalam',cursive; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.9rem; text-align:center; width:140px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .flowchart{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:20px 0; }
+  .fc-node{ font-family:'Kalam',cursive; padding:10px 20px; border-radius:8px; text-align:center; box-shadow:var(--shadow); font-size:0.95rem; }
+  .fc-diamond{ background:#fff3e0; border:2px solid var(--ink-mustard); color:var(--ink-mustard); transform:skewX(-6deg); }
+  .fc-diamond span{ display:inline-block; transform:skewX(6deg); }
+  .fc-box{ background:#eef7ff; border:2px solid var(--ink-navy); color:var(--ink-navy); }
+  .fc-arrow{ color:var(--ink-mustard); font-size:1.3rem; }
+  .fc-branch{ display:flex; gap:40px; }
+  .fc-branch-col{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .fc-lbl{ font-family:'Caveat',cursive; font-size:1.1rem; color:var(--ink-green); }
+  .fc-lbl.no{ color:var(--ink-red); }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+    .fc-branch{ gap:16px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 5</span></h1>
+    <div class="sub">Conditional (Decision-Making) Statements — if / if-else / nested if-else / switch-case 🚦</div>
+    <div class="badges">
+      <span class="badge">✅ if</span>
+      <span class="badge">↔️ if-else</span>
+      <span class="badge">🪜 nested if-else</span>
+      <span class="badge">🔀 switch-case</span>
+      <span class="badge">🛑 break statement</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. OVERVIEW ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>Two Families of Statements</h2></div>
+
+    <div class="mindmap">
+      <div class="core">TypeScript Statements</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>Conditional</b><br>(Decision-Making)<br>if, if-else, switch</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>Looping</b><br>(Iterative)<br>for, while, do-while — Day 6</div></div>
+      </div>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">📖 When to Use Conditional Statements</div>
+      <p>Whenever you want to execute a <mark class="hl-yellow"><b>specific group of statements based on a certain condition</b></mark>. Syntax is nearly identical to Java.</p>
+    </div>
+  </div>
+
+  <!-- ============ 2. IF STATEMENT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>1️⃣ Only-if Statement</h2></div>
+
+    <div class="codeblock">
+if (condition) {<br>
+&nbsp;&nbsp;<span class="cm">// executes only if condition is TRUE</span><br>
+}
+    </div>
+    <p>Condition must <span class="u">always evaluate to true/false</span> (relational/logical operators). If false → block simply skipped, nothing happens.</p>
+
+    <div class="box tip">
+      <div class="box-title">Example — Eligibility Check</div>
+      <div class="codeblock">
+let age: number = 20;<br>
+if (age &gt;= 18) {<br>
+&nbsp;&nbsp;console.log("You are eligible to vote");<br>
+}
+      </div>
+      <p>If <code>age = 15</code>, condition is false → <span class="imp">no output at all</span> (no else to fall back on).</p>
+    </div>
+  </div>
+
+  <!-- ============ 3. IF-ELSE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>2️⃣ if-else Statement</h2></div>
+
+    <div class="codeblock">
+if (condition) {<br>
+&nbsp;&nbsp;<span class="cm">// runs if TRUE</span><br>
+} else {<br>
+&nbsp;&nbsp;<span class="cm">// runs if FALSE</span><br>
+}
+    </div>
+
+    <div class="flowchart">
+      <div class="fc-node fc-diamond"><span>num % 2 == 0 ?</span></div>
+      <div class="fc-arrow">↓</div>
+      <div class="fc-branch">
+        <div class="fc-branch-col"><div class="fc-lbl">TRUE</div><div class="fc-arrow">↓</div><div class="fc-node fc-box">Even Number</div></div>
+        <div class="fc-branch-col"><div class="fc-lbl no">FALSE</div><div class="fc-arrow">↓</div><div class="fc-node fc-box">Odd Number</div></div>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Even or Odd</div>
+      <div class="codeblock">
+let num: number = 10;<br>
+if (num % 2 === 0) {<br>
+&nbsp;&nbsp;console.log(`${num} is even number`);<br>
+} else {<br>
+&nbsp;&nbsp;console.log(`${num} is odd number`);<br>
+}
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Common Mistake — Wrong Quote Type</div>
+      <p>To embed a variable's value inside a printed string, you <span class="imp">MUST use backticks</span> <code>`${num}`</code> — single/double quotes will throw an error or print literally. Alternative: use <code>+</code> concatenation with single/double quotes.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. NESTED IF-ELSE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>3️⃣ Nested if-else (else-if chain)</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 When to Use</div>
+      <p>When you have <mark class="hl-yellow"><b>multiple conditions</b></mark> to check, one after another, top to bottom. Once ANY condition is true, the rest are skipped entirely.</p>
+    </div>
+
+    <div class="codeblock">
+if (condition1) { <span class="cm">/* stmt 1 */</span> }<br>
+else if (condition2) { <span class="cm">/* stmt 2 */</span> }<br>
+else if (condition3) { <span class="cm">/* stmt 3 */</span> }<br>
+else { <span class="cm">/* default stmt */</span> }
+    </div>
+
+    <div class="flowchart">
+      <div class="fc-node fc-diamond"><span>marks &gt;= 90?</span></div>
+      <div class="fc-arrow">↓ false</div>
+      <div class="fc-node fc-diamond"><span>marks &gt;= 75?</span></div>
+      <div class="fc-arrow">↓ false</div>
+      <div class="fc-node fc-diamond"><span>marks &gt;= 60?</span></div>
+      <div class="fc-arrow">↓ false</div>
+      <div class="fc-node fc-box" style="background:#fff0f0;border-color:var(--ink-red);color:var(--ink-red);">else → Grade D</div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Grade Calculator</div>
+      <div class="codeblock">
+let marks: number = 80;<br>
+if (marks &gt;= 90 && marks &lt;= 100) {<br>
+&nbsp;&nbsp;console.log("Grade A");<br>
+} else if (marks &gt;= 75 && marks &lt; 90) {<br>
+&nbsp;&nbsp;console.log("Grade B");<br>
+} else if (marks &gt;= 60 && marks &lt; 75) {<br>
+&nbsp;&nbsp;console.log("Grade C");<br>
+} else {<br>
+&nbsp;&nbsp;console.log("Grade D");<br>
+}
+      </div>
+      <p>marks=80 → <mark class="hl-green"><b>Grade B</b></mark> (skips A, matches B, ignores C & D).</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Example — Browser Selection (Automation Use Case!)</div>
+      <div class="codeblock">
+let browser: string = "chrome";<br>
+if (browser === "chrome") {<br>
+&nbsp;&nbsp;console.log("Browser is Chrome");<br>
+} else if (browser === "firefox") {<br>
+&nbsp;&nbsp;console.log("Browser is Firefox");<br>
+} else if (browser === "safari") {<br>
+&nbsp;&nbsp;console.log("Browser is Safari");<br>
+} else {<br>
+&nbsp;&nbsp;console.log("Some other browser");<br>
+}
+      </div>
+      <p><mark class="hl-blue">Real automation use case</mark> — driver setup based on browser name. Uses <code>===</code> (strict equality) to check value + type.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. SWITCH-CASE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>4️⃣ switch-case Statement</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Key Difference: Condition vs Expression</div>
+      <p>if/else uses a <span class="navy">condition</span> (always true/false). switch uses an <span class="teal">expression</span> (can return <b>anything</b> — number, string, boolean).</p>
+    </div>
+
+    <div class="codeblock">
+switch (expression) {<br>
+&nbsp;&nbsp;case value1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// statements</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;case value2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// statements</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// statements</span><br>
+}
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Day of the Week</div>
+      <div class="codeblock">
+let day: number = 3;<br>
+switch (day) {<br>
+&nbsp;&nbsp;case 1: console.log("Monday"); break;<br>
+&nbsp;&nbsp;case 2: console.log("Tuesday"); break;<br>
+&nbsp;&nbsp;case 3: console.log("Wednesday"); break;<br>
+&nbsp;&nbsp;<span class="cm">// ... case 4 to 7 ...</span><br>
+&nbsp;&nbsp;default: console.log("Invalid day");<br>
+}
+      </div>
+      <p>day=3 → <mark class="hl-green"><b>Wednesday</b></mark>. day=10 (no matching case, no default written) → <span class="imp">no output at all</span>.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 CRITICAL: Why break is Mandatory!</div>
+      <p>Without <code>break</code>, switch-case <span class="imp">"falls through"</span> — it keeps executing the NEXT case(s) too, even though they don't match!</p>
+      <div class="codeblock">
+<span class="cm">// day = 1, but NO break statements:</span><br>
+switch (day) {<br>
+&nbsp;&nbsp;case 1: console.log("Monday");   <span class="c2">// no break!</span><br>
+&nbsp;&nbsp;case 2: console.log("Tuesday");  <span class="c2">// no break!</span><br>
+&nbsp;&nbsp;case 3: console.log("Wednesday");<br>
+}<br>
+<span class="cm">// Output: Monday, Tuesday, Wednesday — ALL printed! 😱</span>
+      </div>
+      <p><mark class="hl-yellow"><b>break</b></mark> is a <b>jumping statement</b> (along with <code>continue</code>) — it exits the entire switch block immediately once a case matches.</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">switch with an Expression (not just a plain variable)</div>
+      <div class="codeblock">
+let x: number = 10, y: number = 5;<br>
+switch (x - y) {   <span class="cm">// expression: 10-5=5</span><br>
+&nbsp;&nbsp;case 0: console.log("result is zero"); break;<br>
+&nbsp;&nbsp;case 5: console.log("result is five"); break;<br>
+&nbsp;&nbsp;case 10: console.log("result is ten"); break;<br>
+&nbsp;&nbsp;default: console.log("result is something else");<br>
+}
+      </div>
+      <p><code>default</code> is <span class="u">optional</span> — if omitted and nothing matches, simply no output.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. COMPARISON TABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🏆 If-Else vs Switch-Case — When to Use What</h2></div>
+
+    <table>
+      <tr><th>Aspect</th><th>if / else-if</th><th>switch-case</th></tr>
+      <tr><td>Checks</td><td>Condition (true/false)</td><td>Expression (any value)</td></tr>
+      <tr><td>Best for</td><td>Range checks, complex logic (&&, ||)</td><td>Fixed set of exact values</td></tr>
+      <tr><td>Many conditions (10+)?</td><td>Gets long & repetitive</td><td class="yes">✅ Much shorter, cleaner</td></tr>
+      <tr><td>Needs explicit exit?</td><td>No</td><td class="yes">✅ Yes — <code>break</code> mandatory</td></tr>
+    </table>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Memory Trick 🧠</b><br>"Many exact values? Switch it up! Ranges & logic? If it, else it!"</div>
+  </div>
+
+  <!-- ============ 7. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Condition vs Expression — what's the difference?"</div>
+      <p>Condition (if/else) → <span class="imp">must</span> return true/false. Expression (switch) → can return <span class="green" style="font-weight:700;">any</span> value type. This IS the core reason they're structured differently.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "What happens if you forget break in switch?"</div>
+      <p>Fall-through bug — <span class="u">all subsequent cases execute</span> regardless of match, until a break is hit or the switch ends. Always trace this carefully in code review questions.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Is default mandatory in switch?"</div>
+      <p>No — optional, just like <code>else</code> in if-else. If omitted and nothing matches, <span class="imp">no error, just no output</span>.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "Nested if-else execution order?"</div>
+      <p>Always evaluated <span class="u">top to bottom</span>. The moment one condition is true, its block runs and <span class="imp">ALL remaining else-if/else are skipped</span> — even if they'd also be true.</p>
+    </div>
+  </div>
+
+  <!-- ============ 8. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>2 statement types: Conditional (decision) & Looping (iterative)</div>
+      <div class="sticky blue"><div class="pin"></div>if → runs only when true, no fallback</div>
+      <div class="sticky pink"><div class="pin"></div>if-else → true block OR false block, never both</div>
+      <div class="sticky orange"><div class="pin"></div>nested if-else → top-to-bottom, first match wins</div>
+      <div class="sticky yellow"><div class="pin"></div>switch uses expression (any value), not condition</div>
+      <div class="sticky blue"><div class="pin"></div>break is mandatory — prevents fall-through</div>
+      <div class="sticky pink"><div class="pin"></div>default in switch = optional, like else</div>
+    </div>
+  </div>
+
+  <!-- ============ 9. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>✅ if</h4>
+        <p style="margin:0;">Runs block only if condition true. No else = no fallback, silently skips if false.</p>
+      </div>
+      <div class="mem-block">
+        <h4>↔️ if-else</h4>
+        <p style="margin:0;">True → if-block. False → else-block. Exactly one runs, never both.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🪜 nested if-else</h4>
+        <p style="margin:0;">Chain of else-if conditions, evaluated top-down. First true match wins, rest skipped.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔀 switch-case</h4>
+        <p style="margin:0;">Matches an expression (any type) against case values. break exits; default is optional fallback.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🚨 break = mandatory</h4>
+        <p style="margin:0;">Without it, execution "falls through" into subsequent cases — a classic bug source.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🎯 Which to pick?</h4>
+        <p style="margin:0;">Few conditions / ranges → if-else. Many exact-value checks → switch-case (shorter, cleaner).</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "If it's true or false — use if. If it's one of many exact values — switch it!" ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 5 Notes • Next up: Looping Statements — for, while, do-while, break & continue 📚 —</div>
+
+</div>
+</body>
+</html>
