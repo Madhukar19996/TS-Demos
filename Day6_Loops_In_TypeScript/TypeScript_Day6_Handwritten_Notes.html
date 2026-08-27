@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 6 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .flow{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:22px 0; }
+  .flow-box{ font-family:'Kalam',cursive; font-size:0.95rem; padding:10px 14px; border:2.5px solid var(--ink-navy); border-radius:10px;
+    background:#fff; box-shadow: var(--shadow); text-align:center; min-width:100px; }
+  .flow-box.alt{ border-color:var(--ink-green); color:var(--ink-green); }
+  .flow-box.warn2{ border-color:var(--ink-red); color:var(--ink-red); }
+  .flow-arrow{ font-size:1.5rem; color:var(--ink-mustard); font-family:'Kalam',cursive; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.9rem; text-align:center; width:150px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .loopchart{ display:flex; flex-direction:column; align-items:center; gap:4px; margin:16px 0; }
+  .loop-node{ font-family:'Kalam',cursive; padding:8px 16px; border-radius:8px; font-size:0.9rem; box-shadow:var(--shadow); text-align:center; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 6</span></h1>
+    <div class="sub">Looping (Iterative) Statements — while • do-while • for • break & continue 🔁</div>
+    <div class="badges">
+      <span class="badge">🔄 while loop</span>
+      <span class="badge">▶️ do-while loop</span>
+      <span class="badge">🔢 for loop</span>
+      <span class="badge">🛑 break</span>
+      <span class="badge">⏭️ continue</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS A LOOP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is a Loop? Why Do We Need It?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A loop (iteration) = <mark class="hl-yellow"><b>repeating a block of statements multiple times</b></mark> based on a condition, instead of writing the same statement over and over.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">❌ Without Loop</div>
+        <div class="codeblock">console.log(1);<br>console.log(2);<br>console.log(3);<br>console.log(4);<br>console.log(5);</div>
+        <p>5 separate statements to print 5 numbers!</p>
+      </div>
+      <div class="box tip">
+        <div class="box-title">✅ With Loop</div>
+        <div class="codeblock">let i = 1;<br>while (i &lt;= 5) {<br>&nbsp;&nbsp;console.log(i);<br>&nbsp;&nbsp;i++;<br>}</div>
+        <p>1 block, repeated 5 times automatically.</p>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🔑 The 3 Must-Knows Before Writing ANY Loop</div>
+      <ol style="padding-left:20px;">
+        <li><b>Initialization</b> — where do we start?</li>
+        <li><b>Condition</b> — where do we stop?</li>
+        <li><b>Increment/Decrement</b> — how much do we change each time?</li>
+      </ol>
+      <p>Identify these 3 things first — writing the loop becomes automatic after that.</p>
+    </div>
+  </div>
+
+  <!-- ============ 2. THREE LOOP TYPES OVERVIEW ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>🗺️ 3 Looping Statements — Overview</h2></div>
+
+    <div class="mindmap">
+      <div class="core">TypeScript Loops</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>while</b><br>Checks condition FIRST</div></div>
+        <div class="branch"><div class="stem">↓</div><div class="leaf"><b>do-while</b><br>Executes ONCE, then checks</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>for</b><br>All 3 parts in ONE line</div></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. WHILE LOOP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>🔄 while Loop</h2></div>
+
+    <div class="codeblock">
+let i = 1;         <span class="cm">// 1. initialization</span><br>
+while (i &lt;= 5) {   <span class="cm">// 2. condition checked FIRST</span><br>
+&nbsp;&nbsp;console.log(i);<br>
+&nbsp;&nbsp;i++;             <span class="cm">// 3. increment</span><br>
+}
+    </div>
+
+    <div class="loopchart">
+      <div class="loop-node" style="background:#eef7ff;border:2px solid var(--ink-navy);">i = 1 (init)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="loop-node" style="background:#fff3e0;border:2px solid var(--ink-mustard);">check: i &lt;= 5 ?</div>
+      <div class="flow-arrow">↓ true</div>
+      <div class="loop-node" style="background:#f3fff5;border:2px solid var(--ink-green);">print i, then i++</div>
+      <div class="flow-arrow">↺ back to check</div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Print Even Numbers 2 to 10 (no % operator)</div>
+      <div class="codeblock">
+let i: number = 2;<br>
+while (i &lt;= 10) {<br>
+&nbsp;&nbsp;console.log(i);<br>
+&nbsp;&nbsp;i += 2;   <span class="cm">// start at 2, jump by 2 → all evens</span><br>
+}
+      </div>
+      <p><mark class="hl-blue">Logic trick:</mark> start=1 & step=2 → odd numbers. start=2 & step=2 → even numbers.</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Example — Same Logic Using % (Modulus)</div>
+      <div class="codeblock">
+let i: number = 1;<br>
+while (i &lt;= 10) {<br>
+&nbsp;&nbsp;if (i % 2 === 0) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(i);   <span class="cm">// only print if even</span><br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;i++;<br>
+}
+      </div>
+      <p>Combine looping + conditional statement — very common pattern.</p>
+    </div>
+
+    <div class="box warn">
+      <div class="box-title">Descending Order Example</div>
+      <div class="codeblock">
+let i: number = 10;<br>
+while (i &gt;= 1) {<br>
+&nbsp;&nbsp;console.log(i);<br>
+&nbsp;&nbsp;i--;      <span class="cm">// decrement instead of increment</span><br>
+}
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 THE INFINITE LOOP TRAP</div>
+      <div class="codeblock">
+while (true) {<br>
+&nbsp;&nbsp;console.log(1);   <span class="c2">// condition NEVER becomes false → runs forever!</span><br>
+}
+      </div>
+      <p><mark class="hl-pink"><b>Rule:</b></mark> The condition MUST become false at some point, or you get an <span class="imp">infinite loop</span> — needs a forced exit (Ctrl+C). Always double-check your increment/decrement logic!</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. DO-WHILE LOOP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>▶️ do-while Loop</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 The Big Difference</div>
+      <p><span class="navy">while</span>: checks condition <span class="u">BEFORE</span> executing → may run <b>zero</b> times.<br>
+      <span class="teal">do-while</span>: executes <span class="u">AT LEAST ONCE</span> before checking condition — even if condition is false from the start!</p>
+    </div>
+
+    <div class="codeblock">
+let i = 1;<br>
+do {<br>
+&nbsp;&nbsp;console.log(i);<br>
+&nbsp;&nbsp;i++;<br>
+} while (i &lt;= 5);   <span class="cm">// note: semicolon required here!</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Proof: The "Runs Even When False" Case</div>
+      <div class="codeblock">
+let i = 10;<br>
+do {<br>
+&nbsp;&nbsp;console.log(i);   <span class="c1">// prints 10 anyway!</span><br>
+&nbsp;&nbsp;i++;<br>
+} while (i &lt;= 5);   <span class="cm">// 10<=5 is FALSE from the start</span><br>
+<span class="cm">// Output: just "10" — block ran once before check</span>
+      </div>
+      <p>In a regular <code>while</code> loop, this same condition would produce <span class="imp">zero output</span>. That's the core interview point.</p>
+    </div>
+
+    <table>
+      <tr><th>Aspect</th><th>while</th><th>do-while</th></tr>
+      <tr><td>Condition checked</td><td>Before execution</td><td>After execution</td></tr>
+      <tr><td>Minimum executions</td><td class="no">0 times</td><td class="yes">✅ 1 time (guaranteed)</td></tr>
+      <tr><td>Semicolon needed?</td><td>No</td><td class="yes">✅ Yes, after while(...)</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. FOR LOOP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>🔢 for Loop</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Why Prefer for Loop?</div>
+      <p>while/do-while need <span class="u">at least 3 separate statements</span> (init, condition, increment). <code>for</code> loop packs <mark class="hl-yellow"><b>all 3 into ONE line</b></mark> — much less code, especially with many loops in a program.</p>
+    </div>
+
+    <div class="codeblock">
+for (initialization; condition; increment/decrement) {<br>
+&nbsp;&nbsp;<span class="cm">// statements</span><br>
+}
+    </div>
+
+    <div class="loopchart">
+      <div class="loop-node" style="background:#eef7ff;border:2px solid var(--ink-navy);">① Initialization (runs ONCE)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="loop-node" style="background:#fff3e0;border:2px solid var(--ink-mustard);">② Condition check</div>
+      <div class="flow-arrow">↓ true</div>
+      <div class="loop-node" style="background:#f3fff5;border:2px solid var(--ink-green);">③ Execute statements</div>
+      <div class="flow-arrow">↓</div>
+      <div class="loop-node" style="background:#faf5ff;border:2px solid var(--ink-purple);">④ Increment/Decrement</div>
+      <div class="flow-arrow">↺ back to ② condition</div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Print 1 to 10</div>
+      <div class="codeblock">
+for (let i = 1; i &lt;= 10; i++) {<br>
+&nbsp;&nbsp;console.log(i);<br>
+}
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Even Numbers (step +2) &amp; Descending Order</div>
+      <div class="codeblock">
+<span class="cm">// even numbers</span><br>
+for (let i = 2; i &lt;= 10; i += 2) { console.log(i); }<br><br>
+<span class="cm">// descending 10 to 1</span><br>
+for (let i = 10; i &gt;= 1; i--) { console.log(i); }
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ TOP INTERVIEW TRAP — Global vs Local Variable in for Loop</div>
+      <div class="cols">
+        <div class="box warn">
+          <div class="box-title">Case A: var declared with `let` INSIDE for(...)</div>
+          <div class="codeblock">
+for (let i = 1; i &lt;= 5; i++) { }<br>
+console.log(i);  <span class="c2">// ❌ Error: i doesn't exist here</span>
+          </div>
+          <p><code>let</code> inside <code>for(...)</code> = <span class="imp">local to the loop only</span>.</p>
+        </div>
+        <div class="box tip">
+          <div class="box-title">Case B: var declared OUTSIDE, reused inside</div>
+          <div class="codeblock">
+let i: number;<br>
+for (i = 1; i &lt;= 5; i++) { }<br>
+console.log(i);  <span class="c1">// ✅ prints 6</span>
+          </div>
+          <p>No <code>let</code> inside <code>for(...)</code> = <span class="green" style="font-weight:700;">reusing the global/outer variable</span> — accessible after the loop!</p>
+        </div>
+      </div>
+      <p><mark class="hl-yellow"><b>Why 6, not 5?</b></mark> After the last valid iteration (i=5), the loop increments i to 6, THEN checks the condition (6&lt;=5 → false) and exits. The final value carried is <b>6</b>.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 The Semicolon-Only for Loop (No Block!)</div>
+      <div class="codeblock">
+let i: number;<br>
+for (i = 1; i &lt;= 5; i++);   <span class="cm">// semicolon = empty block!</span><br>
+console.log(i);   <span class="cm">// prints 6 — loop still ran, just did nothing each time</span>
+      </div>
+      <p>Putting <code>;</code> right after <code>for(...)</code> creates an <span class="u">empty statement block</span> — the loop still runs and updates i, it just has nothing to execute inside.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. BREAK & CONTINUE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🛑⏭️ Jumping Statements: break &amp; continue</h2></div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">🛑 break — Exit the Loop Entirely</div>
+        <div class="codeblock">
+for (let i = 1; i &lt;= 10; i++) {<br>
+&nbsp;&nbsp;if (i === 5) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;break;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;console.log(i);<br>
+}<br>
+<span class="cm">// Output: 1 2 3 4 (stops completely, 5 not even printed)</span>
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">⏭️ continue — Skip This Iteration Only</div>
+        <div class="codeblock">
+for (let i = 1; i &lt;= 10; i++) {<br>
+&nbsp;&nbsp;if (i === 5) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;continue;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;console.log(i);<br>
+}<br>
+<span class="cm">// Output: 1 2 3 4 6 7 8 9 10 (only 5 is skipped)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Skipping Multiple Values — Use OR, Never AND!</div>
+      <div class="codeblock">
+<span class="cm">// ❌ WRONG — logically impossible</span><br>
+if (i === 3 && i === 5 && i === 7) { continue; }<br>
+<span class="cm">// i can never equal 3 AND 5 AND 7 at the same time!</span><br><br>
+<span class="cm">// ✅ CORRECT — use OR</span><br>
+if (i === 3 || i === 5 || i === 7) { continue; }
+      </div>
+      <p><mark class="hl-yellow"><b>Golden Rule:</b></mark> A single variable can only equal ONE value at a time — checking "equals A AND equals B" is <span class="imp">always false</span>. Use <code>&&</code> only for range checks (e.g., <code>i &gt; 5 && i &lt; 10</code>).</p>
+    </div>
+
+    <table>
+      <tr><th>Statement</th><th>Effect</th><th>Use When</th></tr>
+      <tr><td><code>break</code></td><td>Exits the ENTIRE loop immediately</td><td>You want to stop early based on a condition</td></tr>
+      <tr><td><code>continue</code></td><td>Skips only the CURRENT iteration, loop continues</td><td>You want to exclude specific values from processing</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. WHICH LOOP TO USE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>🎯 Which Loop Should You Use?</h2></div>
+
+    <table>
+      <tr><th>Scenario</th><th>Best Loop</th></tr>
+      <tr><td>Check condition before running at all</td><td>while</td></tr>
+      <tr><td>Must run at least once, regardless of condition</td><td>do-while</td></tr>
+      <tr><td>You already know start, end & step count</td><td class="yes"><b>for</b> (most preferred)</td></tr>
+    </table>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky yellow"><div class="pin"></div><b>Memory Trick 🧠</b><br>"do-while ALWAYS does it once — like tasting food before deciding to cook more!" 🍲</div>
+      <div class="sticky blue"><div class="pin"></div><b>for</b> loop = "all-in-one meal deal" — init + condition + step in a single line</div>
+    </div>
+  </div>
+
+  <!-- ============ 8. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Difference between while and do-while?"</div>
+      <p>do-while guarantees <span class="imp">at least 1 execution</span> even if the condition is false from the start. while may run <b>zero</b> times.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "What happens if you forget increment/decrement?"</div>
+      <p>Infinite loop — condition never becomes false, program hangs until forcefully stopped.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "break vs continue?"</div>
+      <p><code>break</code> = exit loop completely. <code>continue</code> = skip just this iteration, keep looping.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "Is the loop variable accessible after the loop ends?"</div>
+      <p>Only if declared <span class="imp">outside</span> with <code>let</code>/<code>var</code> and reused inside <code>for(...)</code> without redeclaring. If declared with <code>let</code> INSIDE <code>for(...)</code>, it's scoped only to the loop.</p>
+    </div>
+  </div>
+
+  <!-- ============ 9. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Loop = repeat statements based on a condition</div>
+      <div class="sticky blue"><div class="pin"></div>3 must-knows: initialization, condition, increment/decrement</div>
+      <div class="sticky pink"><div class="pin"></div>while: checks condition first, may run 0 times</div>
+      <div class="sticky orange"><div class="pin"></div>do-while: runs at least once, checks after</div>
+      <div class="sticky yellow"><div class="pin"></div>for: all 3 parts in one line, most preferred</div>
+      <div class="sticky blue"><div class="pin"></div>break = exit loop. continue = skip this round only</div>
+      <div class="sticky pink"><div class="pin"></div>Missing increment → infinite loop</div>
+    </div>
+  </div>
+
+  <!-- ============ 10. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>🔄 while</h4>
+        <p style="margin:0;">Checks condition BEFORE running. May execute zero times if condition starts false.</p>
+      </div>
+      <div class="mem-block">
+        <h4>▶️ do-while</h4>
+        <p style="margin:0;">Executes block FIRST, checks condition AFTER. Guaranteed at least 1 run. Needs semicolon after while(...).</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔢 for</h4>
+        <p style="margin:0;">init; condition; increment — all in one line. Best when start/end/step are known upfront.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🛑 break vs ⏭️ continue</h4>
+        <p style="margin:0;">break = exit loop entirely. continue = skip current iteration, keep going.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🌍 Scope in for loop</h4>
+        <p style="margin:0;">let inside for(...) = local only. Variable declared outside & reused = accessible after loop ends.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🚨 Infinite Loop</h4>
+        <p style="margin:0;">Condition never turns false = runs forever. Always verify your increment/decrement logic.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Know your start, your stop, and your step — and any loop is yours to write." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 6 Notes • Next up: Arrays, Strings & Functions in TypeScript 📚 —</div>
+
+</div>
+</body>
+</html>
