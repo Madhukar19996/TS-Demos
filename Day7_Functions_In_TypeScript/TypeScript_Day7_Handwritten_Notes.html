@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 7 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.9rem; text-align:center; width:150px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .paramcard{ border-radius:12px; padding:14px 16px; box-shadow:var(--shadow); }
+  .paramcard h4{ font-size:1.1rem; margin-bottom:6px; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 7</span></h1>
+    <div class="sub">Functions — Named • Anonymous • Arrow (Lambda) + Rest/Optional/Default Params 🎯</div>
+    <div class="badges">
+      <span class="badge">🏷️ Named Functions</span>
+      <span class="badge">👻 Anonymous Functions</span>
+      <span class="badge">🏹 Arrow Functions</span>
+      <span class="badge">📦 Rest Params</span>
+      <span class="badge">❓ Optional Params</span>
+      <span class="badge">🎁 Default Params</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS A FUNCTION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is a Function?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A function is a <mark class="hl-yellow"><b>reusable block of code</b></mark> that performs a task — but it only runs when you <span class="u">call/invoke</span> it. The function itself does nothing on its own.</p>
+    </div>
+
+    <div class="mindmap">
+      <div class="core">3 Types of Functions in TS</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>Named</b><br>function keyword + name</div></div>
+        <div class="branch"><div class="stem">↓</div><div class="leaf"><b>Anonymous</b><br>no name, stored in a variable</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>Arrow / Lambda</b><br>=&gt; syntax, most preferred</div></div>
+      </div>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Function vs Method 🧠</b><br>Same definition! A function inside a class = "method". Functions exist without class/object.</div>
+  </div>
+
+  <!-- ============ 2. NAMED FUNCTIONS — BASIC ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>🏷️ Named Functions — Syntax</h2></div>
+
+    <div class="codeblock">
+function functionName(param1: type, param2: type): returnType {<br>
+&nbsp;&nbsp;<span class="cm">// body</span><br>
+}<br><br>
+functionName(arg1, arg2);   <span class="cm">// calling / invoking</span>
+    </div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">No Params, No Return</div>
+        <div class="codeblock">
+function display(): void {<br>
+&nbsp;&nbsp;console.log("Welcome to TypeScript");<br>
+}<br>
+display();  <span class="cm">// must call it!</span>
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">Params + Return Value</div>
+        <div class="codeblock">
+function addNumbers(x: number, y: number): number {<br>
+&nbsp;&nbsp;return x + y;<br>
+}<br>
+console.log(addNumbers(2, 3));  <span class="cm">// 5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">Parameter vs Argument</div>
+      <p><b>Parameter</b> = name used while <span class="u">defining</span> the function. <b>Argument</b> = actual value passed while <span class="u">calling</span> it. Often used interchangeably, but this IS the technical distinction.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. THREE SPECIAL PARAMETER TYPES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>⭐ 3 Special Parameter Types (Interview Favorites!)</h2></div>
+
+    <div class="cols3">
+      <div class="paramcard" style="background:#eef7ff;border:2px solid var(--ink-navy);">
+        <h4 style="color:var(--ink-navy);">📦 Rest Parameters</h4>
+        <p style="font-size:0.95rem;">Accept <b>unlimited</b> values using <code>...</code>. Collected as an array.</p>
+      </div>
+      <div class="paramcard" style="background:#fff0f5;border:2px solid var(--ink-red);">
+        <h4 style="color:var(--ink-red);">❓ Optional Parameters</h4>
+        <p style="font-size:0.95rem;">Mark with <code>?</code> — caller may <b>skip</b> passing it.</p>
+      </div>
+      <div class="paramcard" style="background:#f3fff5;border:2px solid var(--ink-green);">
+        <h4 style="color:var(--ink-green);">🎁 Default Parameters</h4>
+        <p style="font-size:0.95rem;">Assign a <b>fallback value</b> — used only when nothing is passed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4. REST PARAMETERS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>📦 Rest Parameters — Deep Dive</h2></div>
+
+    <div class="box warn">
+      <div class="box-title">❌ Fixed Parameters — Strict Count</div>
+      <div class="codeblock">
+function addNumbers(x: number, y: number): number { return x + y; }<br>
+addNumbers(2, 3, 4);  <span class="c2">// ❌ Error: expected 2 arguments, got 3</span><br>
+addNumbers(2);        <span class="c2">// ❌ Error: expected 2 arguments, got 1</span>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">✅ Rest Parameters — Unlimited Values</div>
+      <div class="codeblock">
+function addNumbers(...nums: number[]): void {<br>
+&nbsp;&nbsp;let sum = 0;<br>
+&nbsp;&nbsp;for (let n of nums) { sum += n; }<br>
+&nbsp;&nbsp;console.log(sum);<br>
+}<br>
+addNumbers(1, 2);           <span class="cm">// 3</span><br>
+addNumbers(1, 2, 3);        <span class="cm">// 6</span><br>
+addNumbers(10,20,30,40,50); <span class="cm">// 150</span>
+      </div>
+      <p>Syntax: <code>...variableName: type[]</code> — the <code>...</code> (3 dots) collects all passed values into an <span class="u">array</span>.</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Rest Parameters with Multiple Types (Union)</div>
+      <div class="codeblock">
+function findElements(...elements: (number | string)[]): number {<br>
+&nbsp;&nbsp;return elements.length;<br>
+}<br>
+findElements(3, "John", 1, 2, "Kate");  <span class="cm">// 5</span><br>
+findElements(10, 20, 30, 40, 50, 60, 70); <span class="cm">// 7</span>
+      </div>
+      <p>Combine rest params with <span class="teal">union types</span> to accept mixed data. <code>.length</code> is an array property returning count of elements.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. OPTIONAL PARAMETERS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>❓ Optional Parameters — Deep Dive</h2></div>
+
+    <div class="codeblock">
+function displayDetails(id: number, name: string, mail?: string): void {<br>
+&nbsp;&nbsp;console.log(id);<br>
+&nbsp;&nbsp;console.log(name);<br>
+&nbsp;&nbsp;if (mail !== undefined) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log(mail);<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+displayDetails(1, "Scott", "scott@gmail.com");  <span class="cm">// prints all 3</span><br>
+displayDetails(2, "Kate");                       <span class="cm">// prints only id & name</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Without the `if` Check</div>
+      <p>If you print an optional param that wasn't passed <span class="u">without</span> checking, you'll get literal <mark class="hl-pink"><b>undefined</b></mark> printed — not skipped automatically! Always guard with <code>if (param !== undefined)</code>.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ CRITICAL RULE — Optional Parameter Ordering</div>
+      <div class="codeblock">
+<span class="cm">// ❌ Error: required parameter cannot follow optional</span><br>
+function fn(id?: number, name: string) { }<br><br>
+<span class="cm">// ✅ Correct — once optional starts, ALL following must be optional too</span><br>
+function fn(id?: number, name?: string) { }
+      </div>
+      <p><mark class="hl-yellow"><b>Rule:</b></mark> Once you mark a parameter optional, <span class="imp">every parameter after it must also be optional</span>. Required params must always come first.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. DEFAULT PARAMETERS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🎁 Default Parameters — Deep Dive</h2></div>
+
+    <div class="codeblock">
+function calculateDiscount(price: number, rate: number = 0.50): void {<br>
+&nbsp;&nbsp;let discount = price * rate;<br>
+&nbsp;&nbsp;console.log("Discount amount:", discount);<br>
+}<br><br>
+calculateDiscount(1000, 0.30);  <span class="cm">// 300 (explicit value wins)</span><br>
+calculateDiscount(1000);        <span class="cm">// 500 (default 0.50 used)</span>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Golden Rule</div>
+      <p>If you <span class="u">explicitly pass</span> a value, it <b>overrides</b> the default. The default only kicks in when the argument is <span class="imp">completely omitted</span> from the call.</p>
+    </div>
+
+    <table>
+      <tr><th>Aspect</th><th>Optional (?)</th><th>Default (= value)</th></tr>
+      <tr><td>If not passed</td><td>Becomes <code>undefined</code></td><td>Falls back to the assigned value</td></tr>
+      <tr><td>Ordering rule</td><td>Must come after required params</td><td>No strict ordering rule like optional</td></tr>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. ANONYMOUS FUNCTIONS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>👻 Anonymous Functions</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A function <mark class="hl-yellow"><b>without a name</b></mark> — instead, it's assigned to a <span class="u">variable</span>, and that variable acts as the function's name for calling it.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">No Params Example</div>
+        <div class="codeblock">
+let msg = function(): string {<br>
+&nbsp;&nbsp;return "Hello TypeScript";<br>
+};<br>
+console.log(msg());   <span class="cm">// call via variable name</span>
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">With Params Example</div>
+        <div class="codeblock">
+let multiply = function(a: number, b: number): number {<br>
+&nbsp;&nbsp;return a * b;<br>
+};<br>
+console.log(multiply(10, 20));  <span class="cm">// 200</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky blue" style="margin:10px auto;"><div class="pin"></div>Rest, optional & default parameters all work in anonymous functions too — no difference from named functions except: no name + must store in a variable.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 8. ARROW FUNCTIONS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>🏹 Arrow Functions (Lambda) — Most Preferred!</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>Arrow functions ARE anonymous functions — <mark class="hl-yellow"><b>same rules apply</b></mark>, but instead of the <code>function</code> keyword, we use the <span class="u">fat arrow</span> <code>=&gt;</code> (also called "goes-to operator"). <span class="imp">Most used in real TS/automation code.</span></p>
+    </div>
+
+    <div class="codeblock">
+let variableName = (parameters): returnType =&gt; {<br>
+&nbsp;&nbsp;<span class="cm">// body</span><br>
+};
+    </div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">No Params, No Return</div>
+        <div class="codeblock">
+let greet = (): void =&gt; {<br>
+&nbsp;&nbsp;console.log("Hello TypeScript");<br>
+};<br>
+greet();
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">Params + Return</div>
+        <div class="codeblock">
+let add = (a: number, b: number): number =&gt; {<br>
+&nbsp;&nbsp;return a + b;<br>
+};<br>
+console.log(add(10, 20));  <span class="cm">// 30</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ Implicit Return — Arrow Function Superpower</div>
+      <p>If the body has <span class="u">ONLY ONE return statement</span>, you can drop the curly braces AND the <code>return</code> keyword entirely!</p>
+      <div class="codeblock">
+<span class="cm">// Full version</span><br>
+let add = (a: number, b: number): number =&gt; { return a + b; };<br><br>
+<span class="cm">// Implicit return — shorter!</span><br>
+let add = (a: number, b: number): number =&gt; a + b;<br>
+let multiply = (a: number, b: number): number =&gt; a * b;
+      </div>
+      <p><mark class="hl-green">Only works with a single-expression body</mark> — multiple statements still need <code>{ }</code> and explicit <code>return</code>.</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Rest / Optional / Default Params — All Work the Same in Arrow Functions</div>
+      <div class="codeblock">
+<span class="cm">// Optional param example</span><br>
+let displayDetails = (id: number, name: string, mail?: string): void =&gt; {<br>
+&nbsp;&nbsp;console.log(id, name, mail);<br>
+};<br><br>
+<span class="cm">// Default param example</span><br>
+let calcDiscount = (price: number, rate: number = 0.50): void =&gt; {<br>
+&nbsp;&nbsp;console.log(price * rate);<br>
+};<br><br>
+<span class="cm">// Rest param example</span><br>
+let findElements = (...elements: (number|string)[]): number =&gt; elements.length;
+      </div>
+      <p>Convert any named function to arrow: remove <code>function</code> keyword + name, add <code>=&gt;</code>, store in a variable.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. COMPARISON TABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🏆 Named vs Anonymous vs Arrow — Master Comparison</h2></div>
+
+    <table>
+      <tr><th>Aspect</th><th>Named</th><th>Anonymous</th><th>Arrow (Lambda)</th></tr>
+      <tr><td>Has a name?</td><td class="yes">✅ Yes</td><td class="no">❌ No</td><td class="no">❌ No</td></tr>
+      <tr><td>Uses <code>function</code> keyword?</td><td class="yes">✅ Yes</td><td class="yes">✅ Yes</td><td class="no">❌ No — uses <code>=&gt;</code></td></tr>
+      <tr><td>Stored in variable?</td><td>Not required</td><td class="yes">✅ Required</td><td class="yes">✅ Required</td></tr>
+      <tr><td>Implicit return?</td><td class="no">❌ No</td><td class="no">❌ No</td><td class="yes">✅ Yes (single statement)</td></tr>
+      <tr><td>Modern preference</td><td>Older style</td><td>Older style</td><td class="yes"><b>✅ Most preferred today</b></td></tr>
+    </table>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Memory Trick 🧠</b><br>Arrow functions = anonymous functions wearing a shorter costume (=&gt; instead of "function")</div>
+  </div>
+
+  <!-- ============ 10. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Are arrow functions a separate type?"</div>
+      <p>No! Arrow functions are technically a <span class="imp">subtype of anonymous functions</span> — just with shorter syntax using <code>=&gt;</code> instead of the <code>function</code> keyword.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "Explain rest, optional, and default parameters with examples"</div>
+      <p>Classic interview ask — know all 3 definitions cold: Rest = unlimited args via <code>...</code>. Optional = <code>?</code>, may be skipped. Default = fallback value via <code>=</code>.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Can a required parameter follow an optional one?"</div>
+      <p>No — TypeScript throws a compile error. Once optional starts, everything after must be optional too.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "When does implicit return work?"</div>
+      <p>Only when the arrow function body is a <span class="u">single return expression</span> — no curly braces, no <code>return</code> keyword needed.</p>
+    </div>
+  </div>
+
+  <!-- ============ 11. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Function = reusable code block, only runs when called</div>
+      <div class="sticky blue"><div class="pin"></div>Named: function keyword + name. Called by name directly.</div>
+      <div class="sticky pink"><div class="pin"></div>Anonymous: no name, stored in a variable</div>
+      <div class="sticky orange"><div class="pin"></div>Arrow: anonymous + =&gt; syntax, most preferred</div>
+      <div class="sticky yellow"><div class="pin"></div>Rest (...x): unlimited args as array</div>
+      <div class="sticky blue"><div class="pin"></div>Optional (x?): may skip, becomes undefined</div>
+      <div class="sticky pink"><div class="pin"></div>Default (x=val): fallback when omitted</div>
+      <div class="sticky orange"><div class="pin"></div>Implicit return: single-statement arrow fn, no braces/return</div>
+    </div>
+  </div>
+
+  <!-- ============ 12. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>🏷️ Named Functions</h4>
+        <p style="margin:0;">function name(params): returnType { }. Called directly by name.</p>
+      </div>
+      <div class="mem-block">
+        <h4>👻 Anonymous Functions</h4>
+        <p style="margin:0;">No name; must be stored in a variable. Variable name = how you call it.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🏹 Arrow Functions</h4>
+        <p style="margin:0;">(params): type =&gt; { }. Implicit return drops braces/return for single expressions.</p>
+      </div>
+      <div class="mem-block">
+        <h4>📦 Rest Parameters</h4>
+        <p style="margin:0;">...name: type[] — unlimited arguments collected as an array. Combine with union type for mixed types.</p>
+      </div>
+      <div class="mem-block">
+        <h4>❓ Optional Parameters</h4>
+        <p style="margin:0;">param?: type — skippable, becomes undefined. Must come after all required params.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🎁 Default Parameters</h4>
+        <p style="margin:0;">param: type = value — fallback used only when argument is fully omitted.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Named for clarity, anonymous for flexibility, arrow for speed." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 7 Notes • Next up: Arrays, Strings & More on Functions 📚 —</div>
+
+</div>
+</body>
+</html>
