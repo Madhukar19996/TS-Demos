@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 8 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .flow{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:6px; margin:22px 0; }
+  .flow-box{ font-family:'Kalam',cursive; font-size:0.9rem; padding:10px 14px; border:2.5px solid var(--ink-navy); border-radius:10px;
+    background:#fff; box-shadow: var(--shadow); text-align:center; min-width:100px; }
+  .flow-box.alt{ border-color:var(--ink-green); color:var(--ink-green); }
+  .flow-box.warn2{ border-color:var(--ink-red); color:var(--ink-red); }
+  .flow-arrow{ font-size:1.5rem; color:var(--ink-mustard); font-family:'Kalam',cursive; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.9rem; text-align:center; width:150px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .crosslist{ list-style:none; padding-left:0; }
+  .crosslist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .crosslist li::before{ content:"✘"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-red);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .stepnum{ display:flex; align-items:center; gap:10px; margin:14px 0 6px 0; }
+  .stepnum .circle{ background:var(--ink-purple); color:#fff; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Kalam',cursive; font-weight:700; flex-shrink:0; }
+  .stepnum .lbl{ font-family:'Kalam',cursive; font-size:1.1rem; color:var(--ink-purple); }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 8</span></h1>
+    <div class="sub">Callback Functions & Function Overloading 🔗</div>
+    <div class="badges">
+      <span class="badge">📞 Callback Functions</span>
+      <span class="badge">⏳ Sync vs Async</span>
+      <span class="badge">🔁 Function Overloading</span>
+      <span class="badge">📝 3-Step Rule</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS A CALLBACK FUNCTION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>📞 What is a Callback Function?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A callback function is a <mark class="hl-yellow"><b>function passed as an argument to another function</b></mark>, and gets executed later — <span class="u">not called immediately</span> when passed.</p>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Basic Example</div>
+      <div class="codeblock">
+function showMessage(message: string): void {<br>
+&nbsp;&nbsp;console.log(message);<br>
+}<br><br>
+function greet(name: string, smg: (msg: string) =&gt; void): void {<br>
+&nbsp;&nbsp;console.log(name);<br>
+&nbsp;&nbsp;smg("hello");   <span class="cm">// invoking the callback here</span><br>
+}<br><br>
+greet("John", showMessage);<br>
+<span class="cm">// Output: John, then hello</span>
+      </div>
+      <p><code>showMessage</code> is passed <span class="u">without calling it</span> (no brackets!) — it's invoked <span class="imp">inside</span> <code>greet</code> later, via the parameter name it was received as.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Callback Parameter Syntax — Not a Plain Type!</div>
+      <p>When receiving a function as a parameter, you must specify its <span class="u">full function signature</span>, not just <code>void</code>:</p>
+      <div class="codeblock">
+<span class="cm">// ❌ Wrong — this is only valid for a function's own return type</span><br>
+function greet(name: string, smg: void) { }<br><br>
+<span class="cm">// ✅ Correct — describe the callback's params and return type</span><br>
+function greet(name: string, smg: (msg: string) =&gt; void) { }
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 2. PARAMETER VS ARGUMENT RECAP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>Quick Recap: Parameter vs Argument</h2></div>
+    <div class="mindmap">
+      <div class="core">Function Call Terminology</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>Argument</b><br>value passed AT the call site</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>Parameter</b><br>variable that RECEIVES it inside the function</div></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. WORKED EXAMPLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>📌 Worked Example — Callback with Result</h2></div>
+
+    <div class="codeblock">
+function displayResult(result: number): void {<br>
+&nbsp;&nbsp;console.log(result);<br>
+}<br><br>
+function sum(a: number, b: number, callback: (result: number) =&gt; void): void {<br>
+&nbsp;&nbsp;let result = a + b;<br>
+&nbsp;&nbsp;callback(result);   <span class="cm">// pass computed result INTO the callback</span><br>
+}<br><br>
+sum(10, 20, displayResult);<br>
+<span class="cm">// Output: 30</span>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">The Flow</div>
+      <ol style="padding-left:20px;">
+        <li>Define <code>displayResult</code> — a normal function.</li>
+        <li>Pass it (name only, no parentheses) as an argument into <code>sum</code>.</li>
+        <li>Inside <code>sum</code>, compute the answer, then <span class="u">call the callback</span> with that answer.</li>
+      </ol>
+      <p>You can pass <span class="teal">multiple callback functions</span> too — just separate them with commas, each with its own signature.</p>
+    </div>
+  </div>
+
+  <!-- ============ 4. SYNC vs ASYNC ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>⏳ Why Callbacks Matter: Sync vs Async</h2></div>
+
+    <table>
+      <tr><th>Synchronous</th><th>Asynchronous</th></tr>
+      <tr><td>Code runs in the <b>exact sequence</b> written</td><td>Later instructions may execute <b>before earlier ones finish</b></td></tr>
+      <tr><td>Default in most languages (Java, Python)</td><td class="imp">Default challenge in JS/TypeScript</td></tr>
+      <tr><td>Predictable order</td><td>Used in API calls, file handling, event handling</td></tr>
+    </table>
+
+    <div class="box tip">
+      <div class="box-title">Where Callbacks Help</div>
+      <p>Callbacks let you <mark class="hl-yellow"><b>force one function to run only after another completes</b></mark> — turning async-prone code into a controlled, synchronous-like sequence.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Automation Reality Check</div>
+      <p>In <span class="imp">pure JS/TS development</span>, callbacks solve async problems. But in <span class="green" style="font-weight:700;">Playwright automation</span>, this is handled instead via <code>async</code>/<code>await</code> keywords — so callback functions are <span class="u">rarely used directly in automation scripts</span>, even though the concept is a common interview topic.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. FUNCTION OVERLOADING — INTRO ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>🔁 Function Overloading — What & Why</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>Function overloading = defining <mark class="hl-yellow"><b>multiple versions of a function with the SAME name</b></mark>, but different parameter types, different parameter counts, or different return types.</p>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Note 🧠</b><br>Java has "method overloading" (needs a class). TypeScript uniquely also supports plain "function overloading" — no class required!</div>
+
+    <div class="box tip">
+      <div class="box-title">The 3-Step Rule — Memorize This!</div>
+      <div class="stepnum"><div class="circle">1</div><div class="lbl">Write the SIGNATURES</div></div>
+      <p style="margin:0 0 8px 38px;">Function declarations with <span class="u">no body</span> — just name, params, return type, ending in <code>;</code></p>
+      <div class="stepnum"><div class="circle">2</div><div class="lbl">Implement ONE function</div></div>
+      <p style="margin:0 0 8px 38px;">A <span class="imp">single</span> implementation that satisfies ALL signatures — never multiple bodies!</p>
+      <div class="stepnum"><div class="circle">3</div><div class="lbl">Call the function</div></div>
+      <p style="margin:0 0 8px 38px;">Call with any parameter combination matching one of the declared signatures.</p>
+    </div>
+  </div>
+
+  <!-- ============ 6. OVERLOADING EXAMPLE 1 — DIFFERENT PARAM TYPES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>Example 1 — Different Parameter Types</h2></div>
+
+    <div class="codeblock">
+<span class="cm">// STEP 1: signatures (no body)</span><br>
+function getInfo(id: number): string;<br>
+function getInfo(name: string): string;<br><br>
+<span class="cm">// STEP 2: single implementation covering both</span><br>
+function getInfo(param: number | string): string {<br>
+&nbsp;&nbsp;if (typeof param === "number") {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `User ID is ${param}`;<br>
+&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `User name is ${param}`;<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+<span class="cm">// STEP 3: calling with either type</span><br>
+console.log(getInfo(101));    <span class="cm">// User ID is 101</span><br>
+console.log(getInfo("John")); <span class="cm">// User name is John</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Backtick Required for Value Extraction</div>
+      <p>To embed <code>param</code>'s value inside the returned string, you <span class="imp">must</span> use backticks: <code>`User ID is ${param}`</code>. Single/double quotes will NOT extract the variable's value — they'll only print the literal text.</p>
+    </div>
+  </div>
+
+  <!-- ============ 7. OVERLOADING EXAMPLE 2 — DIFFERENT PARAM COUNT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>Example 2 — Different Number of Parameters</h2></div>
+
+    <div class="codeblock">
+<span class="cm">// STEP 1: signatures</span><br>
+function add(a: number, b: number): number;<br>
+function add(a: number, b: number, c: number): number;<br><br>
+<span class="cm">// STEP 2: single implementation — 3rd param made OPTIONAL</span><br>
+function add(a: number, b: number, c?: number): number {<br>
+&nbsp;&nbsp;if (c !== undefined) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return a + b + c;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;return a + b;<br>
+}<br><br>
+<span class="cm">// STEP 3: calling</span><br>
+console.log(add(10, 20));      <span class="cm">// 30</span><br>
+console.log(add(10, 20, 30));  <span class="cm">// 60</span>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Key Trick</div>
+      <p>Make the <span class="u">extra parameter optional</span> (<code>c?: number</code>) in the implementation so ONE function body can satisfy BOTH signatures. Check with <code>c !== undefined</code> to decide behavior — <code>else</code> is optional here since <code>a + b</code> always needs to run anyway.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 8. OVERLOADING EXAMPLE 3 — DIFFERENT RETURN TYPE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>Example 3 — Different Return Types</h2></div>
+
+    <div class="codeblock">
+<span class="cm">// STEP 1: signatures</span><br>
+function processInput(str: string): string;<br>
+function processInput(num: number): number;<br><br>
+<span class="cm">// STEP 2: single implementation</span><br>
+function processInput(input: string | number): string | number {<br>
+&nbsp;&nbsp;if (typeof input === "string") {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return input.toUpperCase();<br>
+&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return input * input;<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+<span class="cm">// STEP 3: calling</span><br>
+console.log(processInput("hello"));  <span class="cm">// HELLO</span><br>
+console.log(processInput(5));        <span class="cm">// 25</span>
+    </div>
+
+    <p><mark class="hl-blue">Both parameters AND return type</mark> use union types (<code>string | number</code>) — everything about the signature can vary, as long as one implementation handles it all.</p>
+  </div>
+
+  <!-- ============ 9. OVERLOADING EXAMPLE 4 — 3 TYPES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>Example 4 — Three Different Types (string/number/boolean)</h2></div>
+
+    <div class="codeblock">
+function greet(name: string): string;<br>
+function greet(age: number): string;<br>
+function greet(isMarried: boolean): string;<br><br>
+function greet(value: string | number | boolean): string {<br>
+&nbsp;&nbsp;if (typeof value === "string") {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `Hello ${value}`;<br>
+&nbsp;&nbsp;} else if (typeof value === "number") {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `You are ${value} years old`;<br>
+&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;let result: string = value ? "married" : "single";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return result;<br>
+&nbsp;&nbsp;}<br>
+}<br><br>
+console.log(greet("John"));  <span class="cm">// Hello John</span><br>
+console.log(greet(30));      <span class="cm">// You are 30 years old</span><br>
+console.log(greet(true));    <span class="cm">// married</span><br>
+console.log(greet(false));   <span class="cm">// single</span>
+    </div>
+    <p><mark class="hl-green">Ternary operator</mark> used inside to compactly return "married" or "single" based on the boolean value.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 10. VALID vs INVALID OVERLOADING ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>✅❌ Valid vs Invalid Overloading Rules</h2></div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">✅ Allowed</div>
+        <ul class="checklist">
+          <li>Same function name across all signatures</li>
+          <li>Different parameter TYPES</li>
+          <li>Different NUMBER of parameters (use optional params)</li>
+          <li>Different RETURN types</li>
+          <li>One single implementation that satisfies every signature</li>
+        </ul>
+      </div>
+      <div class="box warn">
+        <div class="box-title">❌ Not Allowed</div>
+        <ul class="crosslist">
+          <li>Writing signatures with NO implementation at all</li>
+          <li>Implementation's return type doesn't match ANY signature's return type</li>
+          <li>Two signatures with <span class="u">identical</span> parameter types — "cannot overload identical signature" error</li>
+          <li>Implementation's parameter types incompatible with a signature</li>
+          <li>Inconsistent optional/mandatory placement across signatures (e.g., param B optional in one, mandatory in another)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Golden Rule of Overloading</div>
+      <p>The single implementation must be a <mark class="hl-yellow"><b>superset that satisfies every declared signature</b></mark> — in parameter types, parameter count, AND return type simultaneously. If even one signature can't be satisfied, overloading isn't possible for that case.</p>
+    </div>
+  </div>
+
+  <!-- ============ 11. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "What is a callback function, with example?"</div>
+      <p>A function passed as an argument to another function and executed later (not immediately). Classic interview ask — have a code example ready.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "How do you receive a function as a parameter in TS?"</div>
+      <p>Specify its full signature: <code>paramName: (argType) =&gt; returnType</code> — not just a plain type like <code>void</code>.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Difference between function overloading and method overloading?"</div>
+      <p>Function overloading = standalone functions, no class needed (TS-specific). Method overloading = belongs to OOP/polymorphism, needs a class (found in Java too).</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "How many implementations does an overloaded function have?"</div>
+      <p>Always <span class="imp">exactly ONE</span> — regardless of how many signatures are declared. This is the #1 rule people get wrong.</p>
+    </div>
+  </div>
+
+  <!-- ============ 12. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">12</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Callback = function passed as argument, executed later</div>
+      <div class="sticky blue"><div class="pin"></div>Callback param needs full signature: (args) =&gt; returnType</div>
+      <div class="sticky pink"><div class="pin"></div>Callbacks solve async problems (Playwright uses async/await instead)</div>
+      <div class="sticky orange"><div class="pin"></div>Overloading: same name, different params/return types</div>
+      <div class="sticky yellow"><div class="pin"></div>3 steps: signatures → ONE implementation → call</div>
+      <div class="sticky blue"><div class="pin"></div>Implementation must satisfy ALL signatures at once</div>
+      <div class="sticky pink"><div class="pin"></div>Identical parameter signatures = compile error</div>
+    </div>
+  </div>
+
+  <!-- ============ 13. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>📞 Callback Function</h4>
+        <p style="margin:0;">Passed as an argument, invoked inside the receiving function later — not called immediately at pass-time.</p>
+      </div>
+      <div class="mem-block">
+        <h4>⏳ Sync vs Async</h4>
+        <p style="margin:0;">Sync = sequential execution. Async = later steps may run before earlier ones finish. Callbacks bring order to async code.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔁 Overloading — 3 Steps</h4>
+        <p style="margin:0;">1) Write signatures (no body). 2) One implementation satisfying all. 3) Call with matching params.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🎯 What Can Differ</h4>
+        <p style="margin:0;">Parameter types, parameter count, return types — name must always stay the same.</p>
+      </div>
+      <div class="mem-block">
+        <h4>✅ Must Satisfy All</h4>
+        <p style="margin:0;">Single implementation's params & return type must cover every declared signature using union types / optional params.</p>
+      </div>
+      <div class="mem-block">
+        <h4>❌ Invalid Cases</h4>
+        <p style="margin:0;">No implementation, mismatched return type, identical signatures, or inconsistent optional placement.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "One name, many faces — that's overloading. Pass now, run later — that's a callback." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 8 Notes • Next up: Arrays in TypeScript 📚 —</div>
+
+</div>
+</body>
+</html>
