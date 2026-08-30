@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 9 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .arrbox{ display:flex; justify-content:center; gap:0; margin:18px 0; flex-wrap:wrap; }
+  .cell{ width:60px; text-align:center; }
+  .cell .val{ background:#fff; border:2px solid var(--ink-navy); padding:14px 0; font-family:'Kalam',cursive; font-size:1.1rem; }
+  .cell .idx{ font-family:'Caveat',cursive; color:var(--ink-red); font-size:1rem; margin-top:2px; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.9rem; text-align:center; width:150px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+    .cell{ width:44px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 9</span></h1>
+    <div class="sub">Arrays & Tuples — Declaration, Indexing, 3 Loop Styles, Functions + Arrays 📚</div>
+    <div class="badges">
+      <span class="badge">📦 Arrays</span>
+      <span class="badge">🔢 Indexing</span>
+      <span class="badge">🔁 for / for-in / for-of</span>
+      <span class="badge">🧩 Arrays + Functions</span>
+      <span class="badge">📌 Tuples</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS AN ARRAY ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is an Array?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A special variable that stores <mark class="hl-yellow"><b>multiple values</b></mark> — same type or mixed types — unlike a primitive variable which holds only ONE value at a time.</p>
+    </div>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky yellow"><div class="pin"></div>In Java: Array ≠ ArrayList (two different things)</div>
+      <div class="sticky blue"><div class="pin"></div>In TS/JS: Array itself IS the collection — no separate "ArrayList"</div>
+    </div>
+
+    <p style="text-align:center;"><mark class="hl-green">Arrays are an "ordered collection"</mark> — the order you insert values is the order they're stored & retrieved.</p>
+  </div>
+
+  <!-- ============ 2. INDEXING CONCEPT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>🔢 Indexing — The Core Concept</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Index = Position/Address of an Element</div>
+      <p>Indexing <mark class="hl-yellow"><b>always starts at 0</b></mark>. For an array of length N, the last valid index is <code>N - 1</code>.</p>
+    </div>
+
+    <div class="arrbox">
+      <div class="cell"><div class="val">"John"</div><div class="idx">0</div></div>
+      <div class="cell"><div class="val">"Smith"</div><div class="idx">1</div></div>
+      <div class="cell"><div class="val">"Peter"</div><div class="idx">2</div></div>
+      <div class="cell"><div class="val">"Scott"</div><div class="idx">3</div></div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ CRITICAL — length vs Last Index</div>
+      <p><code>.length</code> returns <span class="u">how many elements</span> exist (4 here), NOT the last index. Last index = <code>length - 1</code> = <b>3</b> in this example. Mixing these up is the #1 off-by-one bug source.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. DECLARING ARRAYS — 2 APPROACHES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>📦 Declaring Arrays — 2 Approaches</h2></div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">Approach 1 — Literal (Square Bracket)</div>
+        <div class="codeblock">
+let names: string[] = [];        <span class="cm">// declaration only</span><br>
+names[0] = "John";<br>
+names[1] = "Smith";<br><br>
+<span class="cm">// OR declare + initialize together:</span><br>
+let names: string[] = ["John", "Smith", "Peter", "Scott"];
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">Approach 2 — Generic (Array&lt;type&gt;)</div>
+        <div class="codeblock">
+let empNames: Array&lt;string&gt; = ["John", "Smith"];<br>
+let empIds: Array&lt;number&gt; = [101, 102, 103];<br><br>
+<span class="cm">// mixed types via union</span><br>
+let data: Array&lt;string | number&gt; = ["John", 25, "Kate"];<br><br>
+<span class="cm">// any type at all</span><br>
+let mixedData: Array&lt;any&gt; = [1, "hi", true, null];
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Note 🧠</b><br>Both approaches work identically — <code>Array&lt;type&gt;</code> style is more commonly preferred in TS/JS codebases.</div>
+
+    <div class="box def">
+      <div class="box-title">Arrays are Dynamic — No Fixed Size!</div>
+      <p>Unlike some languages, TS/JS arrays <mark class="hl-yellow"><b>don't require a fixed size upfront</b></mark>. You can keep adding values freely. (A <span class="teal">fixed-size, fixed-type</span> version does exist — that's called a <b>tuple</b>, covered later.)</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. THREE WAYS TO LOOP THROUGH AN ARRAY ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>🔁 3 Ways to Loop Through an Array</h2></div>
+
+    <div class="mindmap">
+      <div class="core">Array Iteration</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>Traditional for</b><br>Manual index, full control</div></div>
+        <div class="branch"><div class="stem">↓</div><div class="leaf"><b>for...in</b><br>Auto index, still index-based</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>for...of</b><br>Direct VALUE, no index at all</div></div>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">1️⃣ Traditional for Loop</div>
+      <div class="codeblock">
+for (let i = 0; i &lt; empNames.length; i++) {<br>
+&nbsp;&nbsp;console.log(empNames[i]);<br>
+}
+      </div>
+      <p><mark class="hl-pink">Use <code>i &lt; length</code></mark>, never <code>i &lt;= length</code> — that would try to access one index past the array's end.</p>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">2️⃣ for...in Loop (still index-based)</div>
+      <div class="codeblock">
+for (let i in empIds) {<br>
+&nbsp;&nbsp;console.log(empIds[i]);   <span class="cm">// i is the INDEX, must still access via []</span><br>
+}
+      </div>
+      <p>No manual initialization, condition, or increment needed — but <span class="u">i still represents an index</span>, so you access the value with <code>arrayName[i]</code>.</p>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">3️⃣ for...of Loop (direct value, no index!)</div>
+      <div class="codeblock">
+for (let value of mixedData) {<br>
+&nbsp;&nbsp;console.log(value);   <span class="cm">// value IS the element itself</span><br>
+}
+      </div>
+      <p><mark class="hl-green">Equivalent to "for each"</mark> — the loop variable holds the actual <span class="u">value</span>, not a position. This is the key difference from for...in.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ TOP INTERVIEW QUESTION — for...in vs for...of</div>
+      <table>
+        <tr><th>Aspect</th><th>for...in</th><th>for...of</th></tr>
+        <tr><td>Variable represents</td><td>Index</td><td>Value</td></tr>
+        <tr><td>Need <code>arr[i]</code>?</td><td class="yes">✅ Yes</td><td class="no">❌ No</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. ARRAYS WITH FUNCTIONS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>🧩 Arrays + Functions</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Key Insight</div>
+      <p>An array is just a variable — so it can be <mark class="hl-yellow"><b>passed as a function parameter</b></mark> AND <mark class="hl-yellow"><b>returned from a function</b></mark>, just like any primitive.</p>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Passing an Array IN (Search Function)</div>
+      <div class="codeblock">
+function search(element: number, arr: number[]): boolean {<br>
+&nbsp;&nbsp;for (let i = 0; i &lt; arr.length; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (arr[i] === element) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return true;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;return false;<br>
+}<br><br>
+let arr: number[] = [10, 20, 30, 40, 50];<br>
+console.log(search(30, arr));   <span class="cm">// true</span><br>
+console.log(search(100, arr));  <span class="cm">// false</span>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Example — Returning an Array OUT (Uppercase Converter)</div>
+      <div class="codeblock">
+function capitalizeWords(arr: string[]): string[] {<br>
+&nbsp;&nbsp;let result: string[] = [];<br>
+&nbsp;&nbsp;for (let i = 0; i &lt; arr.length; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;result[i] = arr[i].toUpperCase();<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;return result;<br>
+}<br><br>
+let words: string[] = ["hello", "world", "typescript"];<br>
+console.log(capitalizeWords(words));<br>
+<span class="cm">// ["HELLO", "WORLD", "TYPESCRIPT"]</span>
+      </div>
+      <p><mark class="hl-blue">This is how a function "returns multiple values"</mark> — a function can only return ONE thing, but that one thing can be an array holding many values.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. TUPLES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>📌 Tuples — Fixed Length, Fixed Types</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A tuple is a <mark class="hl-yellow"><b>fixed-length array where each position has a specific, pre-defined type</b></mark>. Used to group related fields of different types together.</p>
+    </div>
+
+    <table>
+      <tr><th>Aspect</th><th>Array</th><th>Tuple</th></tr>
+      <tr><td>Length</td><td class="yes">Dynamic — grow anytime</td><td class="no">Fixed — set by declaration</td></tr>
+      <tr><td>Data type per position</td><td>Same type usually (or union)</td><td class="no">Fixed per exact position</td></tr>
+      <tr><td>Order of values</td><td>Flexible</td><td class="no">Must match declared type order</td></tr>
+    </table>
+
+    <div class="box tip">
+      <div class="box-title">Basic Tuple Example</div>
+      <div class="codeblock">
+let person: [string, number] = ["John", 25];<br>
+<span class="cm">// position 0 MUST be string, position 1 MUST be number</span><br>
+console.log(person[0]);  <span class="cm">// John</span><br>
+console.log(person[1]);  <span class="cm">// 25</span><br><br>
+person[0] = 30;  <span class="c2">// ❌ Error: number not assignable to string</span>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Don't Confuse with Union Type!</div>
+      <div class="codeblock">
+let person: [string, number];    <span class="cm">// TUPLE — 2 fixed slots</span><br>
+let x: string | number;          <span class="cm">// UNION — 1 slot, either type</span>
+      </div>
+      <p>Comma <code>,</code> inside brackets = tuple (multiple fixed positions). Pipe <code>|</code> = union (one value, multiple possible types). Visually similar syntax, completely different meaning!</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Tuple with Multiple Values</div>
+      <div class="codeblock">
+let user: [number, string, boolean, number, string] =<br>
+&nbsp;&nbsp;[10, "John", true, 101, "Kate"];<br>
+<span class="cm">// order & types must match declaration exactly</span>
+      </div>
+      <p>All 3 loop styles (traditional for, for-in, for-of) work on tuples <span class="u">exactly the same</span> as on arrays.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. ARRAY OF TUPLES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>🗂️ Array of Tuples</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Combining Both</div>
+      <p>Wrapping a tuple type in <code>[ ]</code> creates an <mark class="hl-yellow"><b>array that can hold multiple tuples</b></mark>.</p>
+    </div>
+
+    <div class="codeblock">
+<span class="cm">// single tuple — only ONE record</span><br>
+let student: [number, string] = [101, "John"];<br><br>
+<span class="cm">// array of tuples — MULTIPLE records</span><br>
+let students: [number, string][] = [<br>
+&nbsp;&nbsp;[101, "John"],<br>
+&nbsp;&nbsp;[102, "Peter"],<br>
+&nbsp;&nbsp;[103, "Scott"]<br>
+];<br><br>
+console.log(students.length);   <span class="cm">// 3</span><br>
+console.log(students[0]);       <span class="cm">// [101, "John"]</span><br>
+console.log(students[0][0]);    <span class="cm">// 101</span><br>
+console.log(students[0][1]);    <span class="cm">// "John"</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 students[0][0] is NOT a 2D Array!</div>
+      <p>This is <span class="u">tuple-inside-array indexing</span>: first bracket picks which tuple (record), second bracket picks which field inside that tuple. A true 2D array (rows/columns, like <code>a[0,0]</code>) is a <span class="imp">different, rarely-used concept</span> in TS/JS — not what's happening here.</p>
+    </div>
+  </div>
+
+  <!-- ============ 8. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Difference between array and tuple?"</div>
+      <p>Array = dynamic size, usually uniform type. Tuple = fixed size, fixed type PER POSITION.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "Difference between for-in and for-of?"</div>
+      <p>for-in gives the <b>index</b> (need <code>arr[i]</code> to get value). for-of gives the <b>value directly</b> (no indexing needed).</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Can a function return multiple values in TS?"</div>
+      <p>Yes — by returning an <span class="imp">array</span> (or tuple) that bundles multiple values into one returned object.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "What does .length return for an array of length 5?"</div>
+      <p>5 — but the <span class="u">last valid index</span> is 4 (length - 1). This distinction is the classic off-by-one trap.</p>
+    </div>
+  </div>
+
+  <!-- ============ 9. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Array = stores multiple values, dynamic size, index starts at 0</div>
+      <div class="sticky blue"><div class="pin"></div>2 declare styles: string[] or Array&lt;string&gt;</div>
+      <div class="sticky pink"><div class="pin"></div>.length = count of elements, last index = length - 1</div>
+      <div class="sticky orange"><div class="pin"></div>for = manual index. for-in = auto index. for-of = direct value.</div>
+      <div class="sticky yellow"><div class="pin"></div>Arrays can be passed to AND returned from functions</div>
+      <div class="sticky blue"><div class="pin"></div>Tuple = fixed length + fixed type per position</div>
+      <div class="sticky pink"><div class="pin"></div>Array of tuples: [type,type][] holds multiple fixed records</div>
+    </div>
+  </div>
+
+  <!-- ============ 10. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>📦 Array Basics</h4>
+        <p style="margin:0;">Stores multiple values (same or mixed types). Dynamic size. Index starts at 0.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔢 Declaring Arrays</h4>
+        <p style="margin:0;">type[] or Array&lt;type&gt; — both work. Union (type1|type2) for mixed, any for anything.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔁 3 Loop Types</h4>
+        <p style="margin:0;">Traditional for = manual control. for-in = auto index. for-of = direct value, no index.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🧩 Arrays + Functions</h4>
+        <p style="margin:0;">Pass array as parameter for input; return array to send back multiple values.</p>
+      </div>
+      <div class="mem-block">
+        <h4>📌 Tuples</h4>
+        <p style="margin:0;">Fixed length, fixed type per position: [string, number]. Order & type must match exactly.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🗂️ Array of Tuples</h4>
+        <p style="margin:0;">[type,type][] holds multiple records. arr[0][1] = field 1 of record 0 — not a 2D array.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Arrays flex, tuples don't. Index for position, value for content." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 9 Notes • Next up: Array Methods (push, pop, map, filter, concat & more) 📚 —</div>
+
+</div>
+</body>
+</html>

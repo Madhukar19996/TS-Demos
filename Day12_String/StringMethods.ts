@@ -1,8 +1,11 @@
 //String - Text value or combination of characters 
 /*
-1. Single  Quote-
-2. Double Quote -
-3.backtick (``) -
+1. Single  Quote- String Literal ('Single quote')
+2. Double Quote - String Literal ("Double Quote")
+3.backtick (``) - String template - `When we try to use a string variable inside another
+string value ${variable}`
+
+'' or "" or `` (backtick)
 
 //index in string starts with 0
 
