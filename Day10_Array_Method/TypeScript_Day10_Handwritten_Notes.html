@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 10 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .arrbox{ display:flex; justify-content:center; gap:0; margin:14px 0; flex-wrap:wrap; }
+  .cell{ width:66px; text-align:center; }
+  .cell .val{ background:#fff; border:2px solid var(--ink-navy); padding:12px 0; font-family:'Kalam',cursive; font-size:0.95rem; }
+  .cell .idx{ font-family:'Caveat',cursive; color:var(--ink-red); font-size:1rem; margin-top:2px; }
+  .cell.removed .val{ background:#ffe1e1; border-color:var(--ink-red); text-decoration:line-through; color:var(--ink-red); }
+  .cell.added .val{ background:#e1ffe6; border-color:var(--ink-green); color:var(--ink-green); }
+  .methodcard{ border-radius:12px; padding:14px 18px; box-shadow:var(--shadow); margin:14px 0; }
+  .methodcard h4{ font-family:'Kalam',cursive; font-size:1.15rem; margin-bottom:4px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  .autobadge{ display:inline-block; background:var(--ink-green); color:#fff; font-family:'Kalam',cursive; font-size:0.8rem; padding:2px 10px; border-radius:12px; margin-left:6px; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+    .cell{ width:48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 10</span></h1>
+    <div class="sub">Array Methods — push, pop, shift, unshift, concat, slice, splice, indexOf, includes, toString 🛠️</div>
+    <div class="badges">
+      <span class="badge">➕ push / pop</span>
+      <span class="badge">🔼 shift / unshift</span>
+      <span class="badge">🔗 concat</span>
+      <span class="badge">✂️ slice / splice</span>
+      <span class="badge">🔍 indexOf / includes</span>
+      <span class="badge">🔤 toString</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. LENGTH RECAP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>Quick Recap — .length is an Attribute, Not a Method</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Attribute vs Method</div>
+      <p><code>.length</code> has <span class="u">no parentheses</span> — it's a property. A <b>method</b> always ends with <code>()</code>, e.g. <code>.push()</code>.</p>
+    </div>
+
+    <div class="codeblock">
+let numbers: number[] = [1, 2, 3, 4, 5];<br>
+let fruits: string[] = ["apple", "banana", "orange", "mango"];<br><br>
+console.log(numbers.length);  <span class="cm">// 5 — attribute, no ()</span><br>
+console.log(fruits.length);   <span class="cm">// 4</span>
+    </div>
+
+    <p style="text-align:center;"><mark class="hl-yellow">10 array methods today</mark> — these take primitive values as parameters. (Next class: 5-6 methods that take a <span class="teal">function</span> as a parameter — forEach, map, filter, reduce.)</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 2. PUSH & POP ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>➕➖ push() &amp; pop() — Work at the END</h2></div>
+
+    <div class="methodcard" style="background:#eef7ff;border:2px solid var(--ink-navy);">
+      <h4 style="color:var(--ink-navy);">push() <span class="autobadge">adds at end</span></h4>
+      <div class="codeblock">
+let numbers = [1, 2, 3, 4, 5];<br>
+numbers.push(6, 7);   <span class="cm">// add single or multiple values</span><br>
+console.log(numbers); <span class="cm">// [1,2,3,4,5,6,7]</span>
+      </div>
+      <p>No need to know the last index — push figures it out and appends automatically.</p>
+    </div>
+
+    <div class="methodcard" style="background:#fff0f5;border:2px solid var(--ink-red);">
+      <h4 style="color:var(--ink-red);">pop() <span class="autobadge" style="background:var(--ink-red);">removes from end</span></h4>
+      <div class="codeblock">
+let fruits = ["apple", "banana", "orange", "mango"];<br>
+let lastFruit = fruits.pop();<br>
+console.log(fruits);     <span class="cm">// ["apple","banana","orange"]</span><br>
+console.log(lastFruit);  <span class="cm">// "mango" — the removed element!</span>
+      </div>
+      <p>Removes only <span class="u">ONE</span> element (the last one) and <b>returns it</b> — no parameters needed.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. SHIFT & UNSHIFT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>🔼🔽 shift() &amp; unshift() — Work at the BEGINNING</h2></div>
+
+    <div class="methodcard" style="background:#fff0f5;border:2px solid var(--ink-red);">
+      <h4 style="color:var(--ink-red);">shift() <span class="autobadge" style="background:var(--ink-red);">removes from start</span></h4>
+      <div class="codeblock">
+let numbers = [1,2,3,4,5,6,7];<br>
+let firstNum = numbers.shift();<br>
+console.log(numbers);   <span class="cm">// [2,3,4,5,6,7]</span><br>
+console.log(firstNum);  <span class="cm">// 1 — the removed element</span>
+      </div>
+    </div>
+
+    <div class="methodcard" style="background:#eef7ff;border:2px solid var(--ink-navy);">
+      <h4 style="color:var(--ink-navy);">unshift() <span class="autobadge">adds at start</span></h4>
+      <div class="codeblock">
+let fruits = ["apple", "banana", "orange"];<br>
+fruits.unshift("kiwi", "pear");<br>
+console.log(fruits);  <span class="cm">// ["kiwi","pear","apple","banana","orange"]</span>
+      </div>
+      <p>Returns nothing (void) — just modifies the array in place.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ TOP INTERVIEW QUESTION — 4-Method Cheat Table</div>
+      <table>
+        <tr><th>Method</th><th>Action</th><th>Position</th></tr>
+        <tr><td><code>push()</code></td><td>Add</td><td>End</td></tr>
+        <tr><td><code>pop()</code></td><td>Remove</td><td>End</td></tr>
+        <tr><td><code>shift()</code></td><td>Remove</td><td>Beginning</td></tr>
+        <tr><td><code>unshift()</code></td><td>Add</td><td>Beginning</td></tr>
+      </table>
+      <p>Memorize this grid cold — it's asked constantly.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. CONCAT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>🔗 concat() — Combine Arrays</h2></div>
+
+    <div class="codeblock">
+let numbers = [1,2,3,4,5,6,7];<br>
+let combined = numbers.concat([8, 9], [10]);<br>
+console.log(combined);  <span class="cm">// [1..10] — new array</span><br>
+console.log(numbers);   <span class="cm">// [1..7] — UNCHANGED!</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Doesn't Mutate the Original!</div>
+      <p>Unlike push/pop/shift/unshift, <code>concat()</code> <mark class="hl-yellow"><b>does NOT modify the original array</b></mark> — it returns a brand-new combined array. You must store the result in a variable to use it.</p>
+    </div>
+
+    <div class="box warn">
+      <div class="box-title">❌ Can't Mix Types</div>
+      <div class="codeblock">
+numbers.concat(fruits);  <span class="c2">// ❌ Error — number[] can't concat with string[]</span>
+      </div>
+      <p>Concat only works between arrays of the <span class="imp">same type</span>.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. SLICE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>✂️ slice() — Extract a Section (Read-Only)</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Syntax</div>
+      <div class="codeblock">array.slice(startIndex, endIndex)</div>
+      <p><span class="navy">startIndex</span> is <b>inclusive</b>. <span class="teal">endIndex</span> is <b>exclusive</b> — the element AT endIndex is NOT included.</p>
+    </div>
+
+    <div class="arrbox">
+      <div class="cell"><div class="val">kiwi</div><div class="idx">0</div></div>
+      <div class="cell"><div class="val">pear</div><div class="idx">1</div></div>
+      <div class="cell"><div class="val">apple</div><div class="idx">2</div></div>
+      <div class="cell"><div class="val">banana</div><div class="idx">3</div></div>
+      <div class="cell"><div class="val">orange</div><div class="idx">4</div></div>
+    </div>
+
+    <div class="codeblock">
+fruits.slice(1, 3);   <span class="cm">// ["pear", "apple"] — index 3 excluded!</span><br>
+fruits.slice(2, 5);   <span class="cm">// ["apple", "banana", "orange"]</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 The "Exclusive End Index" Trap</div>
+      <p><code>slice(1, 3)</code> → think of it as "up to <b>3 - 1 = 2</b>". This off-by-one confusion is the #1 slice mistake. slice() <span class="u">never modifies</span> the original array — it just returns a new sliced copy.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. SPLICE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🔧 splice() — Add AND/OR Remove Anywhere</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Syntax</div>
+      <div class="codeblock">array.splice(startIndex, deleteCount, item1, item2, ...)</div>
+      <p><span class="imp">No end index here</span> — instead, second param is a <b>delete count</b>. Optional items after that get INSERTED at startIndex.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box warn">
+        <div class="box-title">Case 1 — Remove Only</div>
+        <div class="codeblock">
+let fruits = ["kiwi","pear","apple","banana","orange"];<br>
+let removed = fruits.splice(1, 2);<br>
+console.log(fruits);   <span class="cm">// ["kiwi","banana","orange"]</span><br>
+console.log(removed);  <span class="cm">// ["pear","apple"]</span>
+        </div>
+        <p>From index 1, delete 2 elements. Returns the removed elements.</p>
+      </div>
+      <div class="box tip">
+        <div class="box-title">Case 2 — Insert Only (deleteCount = 0)</div>
+        <div class="codeblock">
+let fruits = ["kiwi","banana","orange"];<br>
+fruits.splice(1, 0, "pineapple", "grape");<br>
+console.log(fruits);<br>
+<span class="cm">// ["kiwi","pineapple","grape","banana","orange"]</span>
+        </div>
+        <p>0 deletions — existing elements just shift right to make room.</p>
+      </div>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Case 3 — Remove AND Insert Together</div>
+      <div class="codeblock">
+let fruits = ["kiwi","pineapple","grape","banana","orange"];<br>
+fruits.splice(1, 2, "mango", "cherry");<br>
+console.log(fruits);<br>
+<span class="cm">// ["kiwi","mango","cherry","banana","orange"]</span>
+      </div>
+      <p>pineapple &amp; grape removed, mango &amp; cherry inserted in their place — <span class="u">all in one call</span>.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ TOP INTERVIEW QUESTION — slice() vs splice()</div>
+      <table>
+        <tr><th>Aspect</th><th>slice()</th><th>splice()</th></tr>
+        <tr><td>Modifies original array?</td><td class="no">❌ No</td><td class="yes">✅ Yes</td></tr>
+        <tr><td>Parameters</td><td>start, end (both indices)</td><td>start, deleteCount, ...itemsToAdd</td></tr>
+        <tr><td>Can insert new items?</td><td class="no">❌ No</td><td class="yes">✅ Yes</td></tr>
+        <tr><td>Purpose</td><td>Extract/read a section</td><td>Add and/or remove elements</td></tr>
+      </table>
+      <p><mark class="hl-yellow"><b>Memory Trick 🧠:</b></mark> "slice = safe copy (read-only), splice = surgery (cuts AND stitches)"</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. INDEXOF & INCLUDES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>🔍 indexOf() &amp; includes() — Searching</h2></div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">indexOf() — Returns Position</div>
+        <div class="codeblock">
+let fruits = ["kiwi","mango","cherry","banana","orange"];<br>
+fruits.indexOf("banana");        <span class="cm">// 3</span><br>
+fruits.indexOf("papaya");        <span class="cm">// -1 (not found)</span><br>
+fruits.indexOf("banana", 2);     <span class="cm">// search starts from index 2</span>
+        </div>
+        <p>2nd optional param = starting index to search from (skips earlier elements).</p>
+      </div>
+      <div class="box tip">
+        <div class="box-title">includes() — Returns Boolean</div>
+        <div class="codeblock">
+fruits.includes("apple");   <span class="cm">// false</span><br>
+fruits.includes("banana");  <span class="cm">// true</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ indexOf vs includes</div>
+      <p><code>indexOf</code> → returns the <span class="navy">position</span> (or <b>-1</b> if missing). <code>includes</code> → returns <span class="teal">true/false</span> directly. Use <code>includes</code> when you just need a yes/no check; use <code>indexOf</code> when you need the actual position.</p>
+    </div>
+  </div>
+
+  <!-- ============ 8. TOSTRING ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>🔤 toString() — Array to String</h2></div>
+
+    <div class="codeblock">
+let numbers = [2,3,4,5,6,7];<br>
+let numbersString = numbers.toString();<br>
+console.log(numbers);         <span class="cm">// [2,3,4,5,6,7]  (array)</span><br>
+console.log(numbersString);   <span class="cm">// "2,3,4,5,6,7"  (single string!)</span>
+    </div>
+    <p><mark class="hl-blue">Converts the entire array into one comma-separated string</mark> — useful when you need to display or log array contents as plain text.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. MASTER SUMMARY TABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🏆 Master Summary — All 10 Methods</h2></div>
+
+    <table>
+      <tr><th>Method</th><th>What It Does</th><th>Returns</th><th>Mutates Original?</th></tr>
+      <tr><td><code>push()</code></td><td>Add to end</td><td>New length</td><td class="yes">✅ Yes</td></tr>
+      <tr><td><code>pop()</code></td><td>Remove from end</td><td>Removed element</td><td class="yes">✅ Yes</td></tr>
+      <tr><td><code>shift()</code></td><td>Remove from start</td><td>Removed element</td><td class="yes">✅ Yes</td></tr>
+      <tr><td><code>unshift()</code></td><td>Add to start</td><td>New length</td><td class="yes">✅ Yes</td></tr>
+      <tr><td><code>concat()</code></td><td>Combine arrays</td><td>New combined array</td><td class="no">❌ No</td></tr>
+      <tr><td><code>slice()</code></td><td>Extract a section</td><td>New sub-array</td><td class="no">❌ No</td></tr>
+      <tr><td><code>splice()</code></td><td>Add/remove anywhere</td><td>Removed elements</td><td class="yes">✅ Yes</td></tr>
+      <tr><td><code>indexOf()</code></td><td>Find position</td><td>Index or -1</td><td class="no">❌ No</td></tr>
+      <tr><td><code>includes()</code></td><td>Check existence</td><td>true / false</td><td class="no">❌ No</td></tr>
+      <tr><td><code>toString()</code></td><td>Convert to string</td><td>Comma-separated string</td><td class="no">❌ No</td></tr>
+    </table>
+
+    <div class="sticky-wrap" style="justify-content:center;">
+      <div class="sticky yellow"><div class="pin"></div><b>Automation Tip 🧠</b><br>Only ~5-6 of these methods (push, includes, indexOf, slice, splice) get used regularly in real automation scripts — rest are more interview-focused.</div>
+    </div>
+  </div>
+
+  <!-- ============ 10. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "Difference between slice and splice?"</div>
+      <p>slice = read-only extraction, doesn't touch original. splice = actively adds/removes, modifies original in place.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "Difference between shift/unshift and push/pop?"</div>
+      <p>shift/unshift work at the <b>beginning</b>. push/pop work at the <b>end</b>.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "What does indexOf return if element not found?"</div>
+      <p><b>-1</b> — never null, never undefined. Always check against -1, not falsy checks.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "Is slice's end index inclusive or exclusive?"</div>
+      <p><span class="imp">Exclusive</span> — the element at that exact index is NOT included in the result.</p>
+    </div>
+  </div>
+
+  <!-- ============ 11. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>.length = attribute (no parens), not a method</div>
+      <div class="sticky blue"><div class="pin"></div>push/pop = end. shift/unshift = beginning.</div>
+      <div class="sticky pink"><div class="pin"></div>concat = combine arrays, returns NEW array, same type only</div>
+      <div class="sticky orange"><div class="pin"></div>slice(start,end) = read-only extract, end is exclusive</div>
+      <div class="sticky yellow"><div class="pin"></div>splice(start,delCount,...items) = add/remove anywhere, mutates</div>
+      <div class="sticky blue"><div class="pin"></div>indexOf = position or -1. includes = true/false.</div>
+      <div class="sticky pink"><div class="pin"></div>toString = array → single comma-separated string</div>
+    </div>
+  </div>
+
+  <!-- ============ 12. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>➕➖ push / pop</h4>
+        <p style="margin:0;">push adds to end (single/multiple). pop removes only the last element, returns it.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔼🔽 shift / unshift</h4>
+        <p style="margin:0;">shift removes first element, returns it. unshift adds to beginning, no return value.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔗 concat</h4>
+        <p style="margin:0;">Combines arrays into a NEW array. Original untouched. Same type only.</p>
+      </div>
+      <div class="mem-block">
+        <h4>✂️ slice vs 🔧 splice</h4>
+        <p style="margin:0;">slice(start,end) = read-only, end exclusive. splice(start,delCount,items) = mutates, adds/removes.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔍 indexOf / includes</h4>
+        <p style="margin:0;">indexOf returns position or -1. includes returns true/false. Both accept optional start index.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔤 toString</h4>
+        <p style="margin:0;">Converts array to one comma-separated string value.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Push and pop the end, shift and unshift the start, slice to peek, splice to perform surgery." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 10 Notes • Next up: forEach, map, filter, reduce & more (function-based array methods) 📚 —</div>
+
+</div>
+</body>
+</html>
