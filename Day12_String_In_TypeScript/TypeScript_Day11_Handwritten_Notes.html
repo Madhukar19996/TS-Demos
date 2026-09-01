@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 11 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .strbox{ display:flex; justify-content:center; gap:0; margin:14px 0; flex-wrap:wrap; }
+  .schar{ width:38px; text-align:center; }
+  .schar .val{ background:#fff; border:2px solid var(--ink-navy); padding:8px 0; font-family:'Kalam',cursive; font-size:1rem; }
+  .schar .idx{ font-family:'Caveat',cursive; color:var(--ink-red); font-size:0.9rem; margin-top:2px; }
+  .methodcard{ border-radius:12px; padding:14px 18px; box-shadow:var(--shadow); margin:14px 0; }
+  .methodcard h4{ font-family:'Kalam',cursive; font-size:1.15rem; margin-bottom:4px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+    .schar{ width:28px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 11</span></h1>
+    <div class="sub">Strings — Declaration, Indexing, 10 Core Methods & Immutability 🔤</div>
+    <div class="badges">
+      <span class="badge">🔤 String Basics</span>
+      <span class="badge">📏 length</span>
+      <span class="badge">🔠 case / charAt / indexOf</span>
+      <span class="badge">✂️ substring / split</span>
+      <span class="badge">🧵 trim / concat</span>
+      <span class="badge">🔒 Immutability</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS A STRING ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is a String?</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>A string is <mark class="hl-yellow"><b>a group of characters / text value</b></mark>. Even numbers inside quotes count as strings! Strings, just like arrays, have <span class="u">index-based characters starting at 0</span>.</p>
+    </div>
+
+    <div class="strbox">
+      <div class="schar"><div class="val">H</div><div class="idx">0</div></div>
+      <div class="schar"><div class="val">e</div><div class="idx">1</div></div>
+      <div class="schar"><div class="val">l</div><div class="idx">2</div></div>
+      <div class="schar"><div class="val">l</div><div class="idx">3</div></div>
+      <div class="schar"><div class="val">o</div><div class="idx">4</div></div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">3 Ways to Write a String</div>
+      <div class="codeblock">
+let str1: string = 'hello';    <span class="cm">// single quote</span><br>
+let str2: string = "hello";    <span class="cm">// double quote</span><br>
+let str3: string = `hello`;    <span class="cm">// backtick</span>
+      </div>
+      <p>All print identically — <span class="teal">Java only allows double quotes</span>; TS/JS gives you all three.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 When Backtick is MANDATORY, Not Optional</div>
+      <div class="codeblock">
+let number = 10;<br>
+console.log("number is number");     <span class="cm">// ❌ prints literal text "number is number"</span><br>
+console.log("number is ${number}");   <span class="c2">// ❌ still invalid in double quotes</span><br>
+console.log(`number is ${number}`);   <span class="c1">// ✅ "number is 10"</span>
+      </div>
+      <p><mark class="hl-yellow"><b>Rule:</b></mark> To embed a variable's VALUE inside a string, you MUST use backticks with <code>${}</code>. 90% of the time single/double quotes are fine — but this specific case needs backtick.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 2. LENGTH & CASE CONVERSION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>📏 length &amp; 🔠 Case Conversion</h2></div>
+
+    <div class="box def">
+      <div class="box-title">length — Attribute, Not a Method</div>
+      <div class="codeblock">
+let str = "Hello, TypeScript!";<br>
+console.log(str.length);   <span class="cm">// 18 — counts spaces & symbols too!</span>
+      </div>
+      <p>No parentheses — it's a property, just like array's <code>.length</code>.</p>
+    </div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">toUpperCase()</div>
+        <div class="codeblock">str.toUpperCase();<br><span class="cm">// "HELLO, TYPESCRIPT!"</span></div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">toLowerCase()</div>
+        <div class="codeblock">str.toLowerCase();<br><span class="cm">// "hello, typescript!"</span></div>
+      </div>
+    </div>
+    <p style="text-align:center;"><mark class="hl-green">Both return a NEW string</mark> — the original <code>str</code> stays unchanged (immutability — more on this later).</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 3. CHARAT & INDEXOF ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>🔍 charAt() vs indexOf() — Exact Opposites</h2></div>
+
+    <table>
+      <tr><th>Method</th><th>Takes as Input</th><th>Returns</th></tr>
+      <tr><td><code>charAt(index)</code></td><td>An index (number)</td><td>The character at that position</td></tr>
+      <tr><td><code>indexOf(string)</code></td><td>A search string</td><td>The index where it starts (or -1)</td></tr>
+    </table>
+
+    <div class="codeblock">
+let str = "Hello TypeScript!";<br>
+str.charAt(4);          <span class="cm">// "o" — character AT index 4</span><br>
+str.indexOf("Type");    <span class="cm">// 6 — index WHERE "Type" starts</span>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Memory Trick 🧠</b><br>charAt = "give me the CHARACTER at this spot" / indexOf = "give me the SPOT of this text"</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. SUBSTRING ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>✂️ substring() — Extract a Portion</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Syntax</div>
+      <div class="codeblock">str.substring(startIndex, endIndex)</div>
+      <p><span class="navy">startIndex</span> inclusive, <span class="teal">endIndex</span> <mark class="hl-yellow"><b>exclusive</b></mark> — exactly like array slice.</p>
+    </div>
+
+    <div class="strbox">
+      <div class="schar"><div class="val">w</div><div class="idx">0</div></div>
+      <div class="schar"><div class="val">e</div><div class="idx">1</div></div>
+      <div class="schar"><div class="val">l</div><div class="idx">2</div></div>
+      <div class="schar"><div class="val">c</div><div class="idx">3</div></div>
+      <div class="schar"><div class="val">o</div><div class="idx">4</div></div>
+      <div class="schar"><div class="val">m</div><div class="idx">5</div></div>
+      <div class="schar"><div class="val">e</div><div class="idx">6</div></div>
+    </div>
+
+    <div class="codeblock">
+"welcome".substring(2, 4);   <span class="cm">// "lc" — index 2 & 3 only, 4 excluded</span><br>
+"welcome".substring(3, 7);   <span class="cm">// "come" — index 3,4,5,6</span><br>
+"welcome".substring(0, 5);   <span class="cm">// "welco"</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Off-by-One Trap</div>
+      <p>To capture the LAST character of a string, your end index must be <code>string.length</code> — since it's exclusive, this correctly includes the final character (at index <code>length - 1</code>).</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. INCLUDES / STARTSWITH / ENDSWITH ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>✅ includes() / startsWith() / endsWith()</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 All Three Return Boolean (true/false)</div>
+      <div class="codeblock">
+let str = "Hello TypeScript!";<br>
+str.includes("TypeScript");   <span class="cm">// true</span><br>
+str.includes("ABC");          <span class="cm">// false</span><br>
+str.startsWith("Hello");      <span class="cm">// true</span><br>
+str.endsWith("!");            <span class="cm">// true</span><br>
+str.startsWith("ABC");        <span class="cm">// false</span>
+      </div>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Case Sensitivity!</div>
+      <p>All string methods are <mark class="hl-pink"><b>case sensitive</b></mark> — <code>"TYPESCRIPT"</code> ≠ <code>"TypeScript"</code>. <code>includes("TYPESCRIPT")</code> would return <span class="imp">false</span> even though the text exists in different casing.</p>
+    </div>
+
+    <p style="text-align:center;"><mark class="hl-blue">includes() = Java's .contains()</mark> — extremely common in automation for assertions/verifications.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 6. REPLACE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🔄 replace()</h2></div>
+
+    <div class="codeblock">
+let str = "Hello TypeScript!";<br>
+let updated = str.replace("TypeScript", "World");<br>
+console.log(updated);  <span class="cm">// "Hello World!"</span><br>
+console.log(str);      <span class="cm">// "Hello TypeScript!" — UNCHANGED</span>
+    </div>
+    <p><mark class="hl-yellow">Returns a new string</mark> with the replacement applied — original stays exactly the same (immutability again).</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. SPLIT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>🔗 split() — String → Array</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Breaks a String into Parts Based on a Delimiter</div>
+      <div class="codeblock">
+let str = "hello typescript";<br>
+let words: string[] = str.split(" ");   <span class="cm">// delimiter = space</span><br>
+console.log(words);        <span class="cm">// ["hello", "typescript"]</span><br>
+console.log(words[0]);     <span class="cm">// "hello"</span><br>
+console.log(words[1]);     <span class="cm">// "typescript"</span>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Real Use Case — Splitting "email,password"</div>
+      <div class="codeblock">
+let myString = "abc@gmail.com,xyzabc";<br>
+let arr = myString.split(",");   <span class="cm">// delimiter = comma</span><br>
+console.log(arr[0]);   <span class="cm">// "abc@gmail.com"</span><br>
+console.log(arr[1]);   <span class="cm">// "xyzabc"</span>
+      </div>
+      <p><mark class="hl-green">Very common in data-driven automation</mark> — parsing CSV-like test data strings.</p>
+    </div>
+
+    <p style="text-align:center;"><span class="imp">split() returns an ARRAY</span> — always store the result in an array variable.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 8. TRIM METHODS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>🧹 trim() / trimStart() / trimEnd()</h2></div>
+
+    <table>
+      <tr><th>Method</th><th>Removes Spaces From</th></tr>
+      <tr><td><code>trim()</code></td><td>Both beginning AND end</td></tr>
+      <tr><td><code>trimStart()</code></td><td>Only the beginning</td></tr>
+      <tr><td><code>trimEnd()</code></td><td>Only the end</td></tr>
+    </table>
+
+    <div class="codeblock">
+let myString = "   Welcome to TypeScript   ";<br>
+myString.trim();       <span class="cm">// "Welcome to TypeScript" (no spaces either side)</span><br>
+myString.trimStart();  <span class="cm">// "Welcome to TypeScript   " (trailing spaces remain)</span><br>
+myString.trimEnd();    <span class="cm">// "   Welcome to TypeScript" (leading spaces remain)</span>
+    </div>
+
+    <div class="sticky blue" style="margin:10px auto;"><div class="pin"></div>Java has only <b>trim()</b>. Python has <b>lstrip/rstrip</b>. TS/JS uses <b>trimStart/trimEnd</b> — different naming per language!</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. CONCAT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>➕ concat() — Joining Strings</h2></div>
+
+    <div class="codeblock">
+let str1 = "Welcome";<br>
+let str2 = "to TypeScript";<br>
+let combined = str1.concat(str2);   <span class="cm">// "Welcome to TypeScript"</span><br><br>
+<span class="cm">// chaining for 3+ strings:</span><br>
+let str3 = "and JavaScript";<br>
+let all = str1.concat(str2).concat(str3);
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 concat() Takes Only ONE Argument</div>
+      <p>To join 3+ strings, you must <span class="u">chain</span> multiple <code>.concat()</code> calls — it doesn't accept multiple parameters like array's concat does.</p>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">Alternative: + Operator (works, but not recommended for strings)</div>
+      <div class="codeblock">let joined = str1 + " " + str2;  <span class="cm">// works, but concat() is preferred for clarity</span></div>
+      <p><code>+</code> is fine for strings but risky — between numbers it does arithmetic instead, so mixing types with <code>+</code> can cause confusion.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 10. STRING IMMUTABILITY ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>🔒 String Immutability — Critical Concept</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Definition</div>
+      <p>Strings are <mark class="hl-yellow"><b>immutable</b></mark> — no string method can change the original string. Every method <span class="u">returns a brand-new string</span>, leaving the original untouched.</p>
+    </div>
+
+    <div class="codeblock">
+let str1 = "welcome";<br>
+let modified = str1.concat(" to TypeScript");<br>
+console.log(modified);  <span class="cm">// "welcome to TypeScript"</span><br>
+console.log(str1);      <span class="cm">// "welcome" — STILL unchanged!</span>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">⭐ Same Concept Applies to Numbers Too</div>
+      <div class="codeblock">
+let number = 10;<br>
+let result = number + 5;<br>
+console.log(result);  <span class="cm">// 15</span><br>
+console.log(number);  <span class="cm">// 10 — unaffected by the operation</span>
+      </div>
+      <p><mark class="hl-green">Mutable vs Immutable:</mark> if an operation CAN'T change the original value, that's immutability. Java also treats strings as immutable — this is a shared concept across languages.</p>
+    </div>
+  </div>
+
+  <!-- ============ 11. MULTI-LINE STRINGS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>📄 Multi-line Strings</h2></div>
+
+    <div class="box warn">
+      <div class="box-title">❌ Not Possible with Single/Double Quotes</div>
+      <div class="codeblock">
+let str = "Welcome to<br>
+TypeScript";  <span class="c2">// ❌ Error — breaks the string</span>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">✅ Backtick Enables Multi-line</div>
+      <div class="codeblock">
+let multiLine = `Welcome to<br>
+TypeScript`;<br>
+console.log(multiLine);<br>
+<span class="cm">// Welcome to</span><br>
+<span class="cm">// TypeScript  (printed across 2 lines)</span>
+      </div>
+      <p>Another reason backtick strings (template literals) are so widely preferred in modern TS/JS.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 12. MASTER SUMMARY TABLE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">12</div><h2>🏆 Master Summary — 10 String Methods</h2></div>
+
+    <table>
+      <tr><th>Method</th><th>Purpose</th><th>Returns</th></tr>
+      <tr><td><code>.length</code></td><td>Count characters (attribute)</td><td>Number</td></tr>
+      <tr><td><code>toUpperCase()</code></td><td>Convert to uppercase</td><td>New string</td></tr>
+      <tr><td><code>toLowerCase()</code></td><td>Convert to lowercase</td><td>New string</td></tr>
+      <tr><td><code>charAt(i)</code></td><td>Character at an index</td><td>Character</td></tr>
+      <tr><td><code>indexOf(str)</code></td><td>Position of a substring</td><td>Index or -1</td></tr>
+      <tr><td><code>substring(s,e)</code></td><td>Extract a portion</td><td>New string</td></tr>
+      <tr><td><code>includes(str)</code></td><td>Check if substring exists</td><td>true/false</td></tr>
+      <tr><td><code>startsWith/endsWith</code></td><td>Check start/end text</td><td>true/false</td></tr>
+      <tr><td><code>replace(old,new)</code></td><td>Replace part of string</td><td>New string</td></tr>
+      <tr><td><code>split(delim)</code></td><td>Break into array</td><td>Array</td></tr>
+      <tr><td><code>trim/trimStart/trimEnd</code></td><td>Remove whitespace</td><td>New string</td></tr>
+      <tr><td><code>concat()</code></td><td>Join strings</td><td>New string</td></tr>
+    </table>
+  </div>
+
+  <!-- ============ 13. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">13</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "What is string immutability?"</div>
+      <p>String methods never modify the original string — they always return a new one. Have the concat() example ready.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "Difference between charAt() and indexOf()?"</div>
+      <p>charAt takes an index, returns a character. indexOf takes a string, returns an index. Opposite direction.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "Is substring's end index inclusive?"</div>
+      <p>No — exclusive, same rule as array slice. Always subtract 1 mentally to know the last included character.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "When must you use backticks over quotes?"</div>
+      <p>Whenever embedding a variable's value inside a string (<code>${var}</code>), or writing a multi-line string. Single/double quotes fail in both cases.</p>
+    </div>
+  </div>
+
+  <!-- ============ 14. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">14</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>String = group of characters, index starts at 0, 3 quote styles</div>
+      <div class="sticky blue"><div class="pin"></div>Backtick mandatory for ${var} embedding & multi-line strings</div>
+      <div class="sticky pink"><div class="pin"></div>.length = attribute, counts ALL characters incl. spaces/symbols</div>
+      <div class="sticky orange"><div class="pin"></div>charAt(index)→char | indexOf(str)→index (opposites)</div>
+      <div class="sticky yellow"><div class="pin"></div>substring(start,end) — end is exclusive</div>
+      <div class="sticky blue"><div class="pin"></div>includes/startsWith/endsWith → boolean, case-sensitive</div>
+      <div class="sticky pink"><div class="pin"></div>split() → returns array. concat() → 1 arg only, chain for more.</div>
+      <div class="sticky orange"><div class="pin"></div>Strings are IMMUTABLE — methods never change the original</div>
+    </div>
+  </div>
+
+  <!-- ============ 15. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>🔤 String Basics</h4>
+        <p style="margin:0;">Group of characters, index from 0. 3 quote types; backtick required for ${} and multi-line.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔠 Case &amp; Search</h4>
+        <p style="margin:0;">toUpperCase/toLowerCase convert case. charAt(i) gets char; indexOf(str) gets position.</p>
+      </div>
+      <div class="mem-block">
+        <h4>✂️ substring &amp; split</h4>
+        <p style="margin:0;">substring(start,end) extracts (end exclusive). split(delimiter) breaks into an array.</p>
+      </div>
+      <div class="mem-block">
+        <h4>✅ Boolean Checks</h4>
+        <p style="margin:0;">includes/startsWith/endsWith return true/false, all case-sensitive.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🧹 Cleanup &amp; Join</h4>
+        <p style="margin:0;">trim/trimStart/trimEnd remove spaces. concat() joins (one arg, chain for more).</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔒 Immutability</h4>
+        <p style="margin:0;">Every string method returns a NEW string — the original is never modified.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "Strings never change themselves — they only hand you a new copy." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 11 Notes • Next up: New Topics Beyond Arrays &amp; Strings 📚 —</div>
+
+</div>
+</body>
+</html>
