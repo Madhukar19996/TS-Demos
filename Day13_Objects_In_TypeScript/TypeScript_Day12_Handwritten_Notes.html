@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TypeScript Day 12 — Topper's Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Caveat:wght@500;700&family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fffdf7; --paper2:#fffef9; --rule:#cfe0f2; --margin:#f2b8c2;
+    --ink-navy:#1a3a6b; --ink-red:#c0392b; --ink-green:#1c7a4d; --ink-mustard:#b8791a;
+    --ink-purple:#6c3483; --ink-teal:#0e7c86;
+    --hl-yellow:#fff3a0; --hl-pink:#ffd7e6; --hl-blue:#cfe8ff; --hl-green:#d3f5da;
+    --sticky-yellow:#fff5b8; --sticky-pink:#ffd0de; --sticky-blue:#cfe6ff; --sticky-orange:#ffd9ad;
+    --shadow: 0 3px 8px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; padding:0; background:#e9e2d0; font-family:'Patrick Hand', cursive; color:#20304a; }
+  .page{ max-width:980px; margin:0 auto; padding:0 0 60px 0; }
+  .sheet{
+    position:relative;
+    background: linear-gradient(var(--paper2), var(--paper)),
+      repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--rule) 34px);
+    background-blend-mode:normal; border-radius:6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.08);
+    padding: 40px 46px 40px 76px; margin: 26px 14px;
+  }
+  .sheet::before{ content:""; position:absolute; top:0; bottom:0; left:46px; width:2px; background: var(--margin); opacity:0.7; }
+  .sheet::after{ content:""; position:absolute; left:14px; top:40px; bottom:40px; width:14px;
+    background-image: radial-gradient(circle, #dcd6c4 0 6px, transparent 7px);
+    background-repeat: repeat-y; background-size: 14px 90px; opacity:0.9; }
+  h1,h2,h3,h4{ font-family:'Kalam', cursive; margin:0; }
+  .title-sheet{ text-align:center; padding: 34px 30px 30px 30px; }
+  .title-sheet .kicker{ font-family:'Architects Daughter', cursive; color:var(--ink-purple); font-size:1.05rem; letter-spacing:2px; text-transform:uppercase; }
+  .title-sheet h1{ font-size:3rem; color:var(--ink-navy); line-height:1.15; margin-top:6px; text-shadow: 2px 2px 0 rgba(26,58,107,0.08); }
+  .title-sheet h1 span{ color:var(--ink-red); text-decoration: underline wavy var(--ink-mustard) 3px; text-underline-offset:6px; }
+  .title-sheet .sub{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--ink-teal); margin-top:10px; }
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; }
+  .badge{ font-family:'Patrick Hand', cursive; font-size:0.95rem; padding:6px 14px; border-radius:20px; border:2px dashed var(--ink-navy); color:var(--ink-navy); background: var(--hl-blue); transform: rotate(-1.5deg); }
+  .badge:nth-child(2n){ transform: rotate(1.5deg); background:var(--hl-green); border-color:var(--ink-green); color:var(--ink-green);}
+  .badge:nth-child(3n){ background:var(--hl-pink); border-color:var(--ink-red); color:var(--ink-red);}
+  .doodle-row{ display:flex; justify-content:center; gap:26px; margin-top:20px; font-size:1.6rem; opacity:0.85; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin: 6px 0 20px 0; }
+  .sec-num{ font-family:'Kalam',cursive; font-weight:700; font-size:1.3rem; color:#fff; background: var(--ink-navy);
+    width:42px; height:42px; border-radius:50% 50% 50% 8px; display:flex; align-items:center; justify-content:center;
+    box-shadow: var(--shadow); flex-shrink:0; transform: rotate(-4deg); }
+  .sec-head h2{ font-size:1.85rem; color:var(--ink-navy); border-bottom:3px solid var(--hl-yellow); padding-bottom:2px; }
+  mark{ background: var(--hl-yellow); padding:1px 5px; border-radius:3px; box-decoration-break: clone; }
+  .hl-pink{ background:var(--hl-pink); } .hl-blue{ background:var(--hl-blue); } .hl-green{ background:var(--hl-green); }
+  .u{ text-decoration: underline; text-decoration-color:var(--ink-red); text-decoration-style:wavy; text-underline-offset:3px; }
+  .imp{ color:var(--ink-red); font-weight:700; } .navy{ color:var(--ink-navy); font-weight:700;}
+  .green{ color:var(--ink-green); font-weight:700;} .purple{ color:var(--ink-purple); font-weight:700;} .teal{color:var(--ink-teal); font-weight:700;}
+  p, li{ font-size:1.12rem; line-height:1.65; }
+  .box{ border:2.5px solid var(--ink-navy); border-radius: 14px 4px 14px 4px / 4px 14px 4px 14px; padding:16px 20px; margin:18px 0;
+    background: repeating-linear-gradient(var(--paper2), var(--paper) 33px); box-shadow: var(--shadow); position:relative; }
+  .box-title{ font-family:'Kalam',cursive; font-weight:700; font-size:1.1rem; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .box.def{ border-color:var(--ink-teal); } .box.def .box-title{ color:var(--ink-teal); }
+  .box.warn{ border-color:var(--ink-red); background: #fff6f5; } .box.warn .box-title{ color:var(--ink-red); }
+  .box.tip{ border-color:var(--ink-green); background:#f6fff8; } .box.tip .box-title{ color:var(--ink-green); }
+  .box.trick{ border-style:dashed; border-color:var(--ink-purple); background:#faf5ff;} .box.trick .box-title{ color:var(--ink-purple); }
+  .sticky-wrap{ display:flex; flex-wrap:wrap; gap:18px; margin:20px 0; }
+  .sticky{ font-family:'Caveat', cursive; font-size:1.25rem; line-height:1.35; padding:16px 16px 22px 16px; width:220px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,0.22); position:relative; }
+  .sticky.yellow{ background:var(--sticky-yellow); transform:rotate(-3deg);}
+  .sticky.pink{ background:var(--sticky-pink); transform:rotate(2deg);}
+  .sticky.blue{ background:var(--sticky-blue); transform:rotate(-2deg);}
+  .sticky.orange{ background:var(--sticky-orange); transform:rotate(3deg);}
+  .sticky b{ font-family:'Kalam',cursive; font-size:1.05rem; }
+  .pin{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:16px; height:16px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a8a, #b8001f); box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-family:'Patrick Hand', cursive; font-size:1.05rem; }
+  th{ background: var(--ink-navy); color:#fff; font-family:'Kalam',cursive; padding:10px 12px; text-align:left; border:2px solid var(--ink-navy); }
+  td{ padding:9px 12px; border:2px solid #b9c9de; }
+  tr:nth-child(even) td{ background: #f2f7ff; } tr:nth-child(odd) td{ background: #ffffff; }
+  td.yes{ color:var(--ink-green); font-weight:700; } td.no{ color:var(--ink-red); font-weight:700; }
+  code, .code{ font-family: 'Courier New', monospace; background:#12213c; color:#7cffb2; padding:2px 7px; border-radius:4px; font-size:0.95rem; }
+  .codeblock{ font-family:'Courier New', monospace; background:#12213c; color:#dbe8ff; padding:14px 18px; border-radius:10px; margin:14px 0;
+    box-shadow: var(--shadow); font-size:0.95rem; line-height:1.55; overflow-x:auto; border-left: 5px solid var(--hl-yellow); }
+  .codeblock .c1{ color:#7cffb2; } .codeblock .c2{ color:#ffb86c; } .codeblock .c3{ color:#8ecfff; } .codeblock .cm{ color:#7a8bab; }
+  .mindmap{ display:flex; flex-direction:column; align-items:center; gap:0; margin:20px 0; }
+  .mindmap .core{ font-family:'Kalam',cursive; background: var(--ink-navy); color:#fff; padding:14px 26px; border-radius:50px; font-size:1.2rem; box-shadow:var(--shadow); }
+  .mindmap .branches{ display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+  .mindmap .branch{ display:flex; flex-direction:column; align-items:center; }
+  .mindmap .branch .stem{ font-size:1.4rem; color:var(--ink-mustard); }
+  .mindmap .branch .leaf{ font-family:'Patrick Hand', cursive; background:#fff; border:2px solid var(--ink-teal); color:var(--ink-teal);
+    border-radius:10px; padding:8px 12px; margin-top:4px; font-size:0.85rem; text-align:center; width:140px; }
+  .cols{ display:flex; gap:24px; flex-wrap:wrap; } .cols > div{ flex:1; min-width:260px; }
+  .cols3{ display:flex; gap:14px; flex-wrap:wrap; } .cols3 > div{ flex:1; min-width:190px; }
+  .divider{ border:none; height:3px; background: repeating-linear-gradient(90deg, var(--ink-mustard) 0 10px, transparent 10px 18px); margin:34px 0; }
+  .checklist{ list-style:none; padding-left:0; }
+  .checklist li{ padding-left:32px; position:relative; margin-bottom:8px; }
+  .checklist li::before{ content:"✔"; position:absolute; left:0; top:0; color:#fff; background:var(--ink-green);
+    width:22px; height:22px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; transform: rotate(-6deg); }
+  .exam-trick{ background: linear-gradient(100deg, #fff2f2, #fff9e8); border:3px dashed var(--ink-red); border-radius:14px;
+    padding:16px 20px; margin:18px 0; box-shadow:var(--shadow); }
+  .exam-trick .box-title{ color:var(--ink-red); } .exam-trick .box-title::before{ content:"⚡"; }
+  .approachcard{ border-radius:12px; padding:14px 16px; box-shadow:var(--shadow); margin:12px 0; }
+  .approachcard h4{ font-family:'Kalam',cursive; font-size:1.1rem; margin-bottom:4px; }
+  .memsheet{ background: linear-gradient(var(--paper2), #fffaf0); border:4px double var(--ink-navy); }
+  .mem-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media(max-width:700px){ .mem-grid{ grid-template-columns:1fr; } }
+  .mem-block{ border:2px solid #ccc; border-left:6px solid var(--ink-teal); border-radius:6px; padding:12px 16px; background:#fff; }
+  .mem-block h4{ color:var(--ink-teal); font-size:1.1rem; margin-bottom:6px; }
+  .footer-note{ text-align:center; font-family:'Caveat', cursive; font-size:1.4rem; color:var(--ink-purple); margin: 30px 0 10px 0; }
+  @media (max-width:640px){
+    .sheet{ padding:28px 20px 28px 46px; margin:16px 6px; }
+    .title-sheet h1{ font-size:2.1rem; } .sec-head h2{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ TITLE ============ -->
+  <div class="sheet title-sheet">
+    <div class="kicker">✦ Topper's Notes ✦ QA Automation Track ✦</div>
+    <h1>TypeScript <span>Day 12</span></h1>
+    <div class="sub">Objects — 4 Ways to Create, Access, Intersection Types & Intro to Classes 🧱</div>
+    <div class="badges">
+      <span class="badge">📦 What is an Object?</span>
+      <span class="badge">1️⃣ Object Type</span>
+      <span class="badge">2️⃣ Inline Type</span>
+      <span class="badge">3️⃣ Type Alias</span>
+      <span class="badge">4️⃣ Class</span>
+      <span class="badge">🧬 Intersection Types</span>
+    </div>
+    <div class="doodle-row">🖊️ 📎 ☕ 📐 🔖</div>
+  </div>
+
+  <!-- ============ 1. WHAT IS AN OBJECT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">1</div><h2>What is an Object? — Start of OOP! 🎉</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Three Layers of Definition</div>
+      <p><b>Real world:</b> anything with <mark class="hl-yellow"><b>properties + behavior</b></mark> (a human, an animal, a phone).<br>
+      <b>Java/Python:</b> object = <span class="navy">variables + methods</span>.<br>
+      <b>TS/JS (extra):</b> object = <span class="teal">a collection of key-value pairs</span> — properties as keys, methods as function-values.</p>
+    </div>
+
+    <div class="mindmap">
+      <div class="core">Object Example: Employee</div>
+      <div class="branches">
+        <div class="branch"><div class="stem">↙</div><div class="leaf"><b>Properties</b><br>name, age, salary, job</div></div>
+        <div class="branch"><div class="stem">↘</div><div class="leaf"><b>Behavior (methods)</b><br>getDetails(), calcBonus()</div></div>
+      </div>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>4 Ways to Create Objects in TS 🧠</b><br>1) Object type &nbsp; 2) Inline type object &nbsp; 3) Type alias &nbsp; 4) Class (most used!)</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 2. APPROACH 1 — OBJECT TYPE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">2</div><h2>1️⃣ Approach: Object Type (Direct)</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Directly Assign Values — Works in JS AND TS</div>
+      <div class="codeblock">
+let employee = {<br>
+&nbsp;&nbsp;name: "John",<br>
+&nbsp;&nbsp;age: 30,<br>
+&nbsp;&nbsp;salary: 50000,<br>
+&nbsp;&nbsp;job: "Engineer",<br>
+&nbsp;&nbsp;getDetails: function(): string {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `${this.name} is a ${this.job} earning ${this.salary}`;<br>
+&nbsp;&nbsp;}<br>
+};
+      </div>
+      <p>Use <mark class="hl-yellow"><b>colon (:)</b></mark> for key-value pairs, not <code>=</code>. Inside a method, access properties with <span class="u"><code>this.propertyName</code></span> — NOT the bare name.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Don't Type-Annotate as `object`!</div>
+      <div class="codeblock">
+let employee: object = { name: "John" };<br>
+console.log(employee.name);  <span class="c2">// ❌ Error: property doesn't exist on type 'object'</span>
+      </div>
+      <p>If you explicitly annotate with the generic <code>object</code> keyword, TypeScript <span class="imp">blocks direct property access</span>! Just skip the annotation — by default it's still treated as an object (via type inference).</p>
+    </div>
+  </div>
+
+  <!-- ============ 3. ACCESSING OBJECT DATA ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">3</div><h2>🔑 Accessing & Modifying Object Data</h2></div>
+
+    <div class="cols">
+      <div class="box tip">
+        <div class="box-title">Approach 1 — Dot Notation (most common)</div>
+        <div class="codeblock">
+console.log(employee.name);<br>
+console.log(employee.getDetails());<br>
+employee.job = "Manager";   <span class="cm">// modifying a value</span>
+        </div>
+      </div>
+      <div class="box tip">
+        <div class="box-title">Approach 2 — Bracket Notation</div>
+        <div class="codeblock">
+console.log(employee["name"]);<br>
+console.log(employee["getDetails"]());<br>
+employee["job"] = "Manager";
+        </div>
+        <p>Key must be in <span class="u">quotes</span> inside brackets.</p>
+      </div>
+    </div>
+
+    <div class="sticky blue" style="margin:10px auto;"><div class="pin"></div>Both notations work identically — dot notation is used far more often in practice.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 4. APPROACH 2 — INLINE TYPE OBJECT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">4</div><h2>2️⃣ Approach: Inline Type Object (TS Only)</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Declare Structure First, Assign Data After</div>
+      <div class="codeblock">
+<span class="cm">// STEP 1: declare structure (types only, no values)</span><br>
+let student: { name: string; age: number; grade: string; getSummary: () =&gt; string; };<br><br>
+<span class="cm">// STEP 2: assign the data separately</span><br>
+student = {<br>
+&nbsp;&nbsp;name: "Scott",<br>
+&nbsp;&nbsp;age: 15,<br>
+&nbsp;&nbsp;grade: "A",<br>
+&nbsp;&nbsp;getSummary: function(): string {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `${this.name} is ${this.age} years old and scored grade ${this.grade}`;<br>
+&nbsp;&nbsp;}<br>
+};
+      </div>
+      <p><mark class="hl-yellow">TypeScript ONLY</mark> — explicit data types make this unusable in plain JavaScript.</p>
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 The Big Problem — Repetition!</div>
+      <p>To create a <b>second student</b> object, you must <span class="imp">re-type the ENTIRE structure again</span> from scratch. For 10 students, you repeat the structure 10 times. This repetition is exactly what the next approach solves.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 5. APPROACH 3 — TYPE ALIAS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">5</div><h2>3️⃣ Approach: Type Alias (Reusable Structure) ⭐</h2></div>
+
+    <div class="box tip">
+      <div class="box-title">📖 Define Structure ONCE, Reuse for MANY Objects</div>
+      <div class="codeblock">
+<span class="cm">// define the structure ONCE using 'type'</span><br>
+type Product = {<br>
+&nbsp;&nbsp;name: string;<br>
+&nbsp;&nbsp;price: number;<br>
+&nbsp;&nbsp;getInfo: () =&gt; string;<br>
+};<br><br>
+<span class="cm">// reuse it for MULTIPLE objects</span><br>
+let book1: Product = {<br>
+&nbsp;&nbsp;name: "Learn Java", price: 300,<br>
+&nbsp;&nbsp;getInfo: function(): string { return `${this.name} costs ${this.price}`; }<br>
+};<br>
+let book2: Product = { name: "Learn Python", price: 500, getInfo: function() { return `${this.name} costs ${this.price}`; } };<br>
+let book3: Product = { name: "Learn JavaScript", price: 600, getInfo: function() { return `${this.name} costs ${this.price}`; } };
+      </div>
+      <p><mark class="hl-green"><b>Solves the repetition problem!</b></mark> Declare once with <code>type</code>, then just tag every new object with <code>: Product</code>. TS-only feature.</p>
+    </div>
+  </div>
+
+  <!-- ============ 6. INTERSECTION TYPES ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">6</div><h2>🧬 Intersection Types — Combining Types</h2></div>
+
+    <div class="box def">
+      <div class="box-title">📖 Combine Multiple Types Using &amp;</div>
+      <div class="codeblock">
+type Personal = { name: string; age: number; };<br>
+type Contact = { email: string; phone: number; };<br><br>
+<span class="cm">// combine both + add an extra method</span><br>
+type Candidate = Personal & Contact & {<br>
+&nbsp;&nbsp;getContactInfo: () =&gt; string;<br>
+};<br><br>
+let candidate: Candidate = {<br>
+&nbsp;&nbsp;name: "Scott", age: 25, email: "scott@mail.com", phone: 9876543210,<br>
+&nbsp;&nbsp;getContactInfo: function(): string {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `${this.name} can be contacted at ${this.email} or ${this.phone}`;<br>
+&nbsp;&nbsp;}<br>
+};
+      </div>
+      <p>The <code>&</code> operator merges ALL properties from every combined type into one — <span class="u">Candidate gets everything</span> from Personal + Contact + its own addition.</p>
+    </div>
+
+    <div class="sticky pink" style="margin:10px auto;"><div class="pin"></div>Union (<code>|</code>) = "one OR the other". Intersection (<code>&</code>) = "combine ALL of them together". Opposite concepts!</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 7. ITERATING AN OBJECT ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">7</div><h2>🔁 Iterating Object Properties — for...in</h2></div>
+
+    <div class="codeblock">
+for (let key in book3) {<br>
+&nbsp;&nbsp;console.log(book3[key as keyof typeof book3]);<br>
+}<br>
+<span class="cm">// prints each property value one after another</span>
+    </div>
+    <p><mark class="hl-yellow">Rarely used in practice</mark> — one loop only works within a single object; you can't loop across multiple objects at once this way. Most of the time, direct <code>console.log()</code> calls are simpler.</p>
+  </div>
+
+  <!-- ============ 8. WHY CLASSES MATTER MOST ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">8</div><h2>4️⃣ Why Classes Are the Preferred Approach</h2></div>
+
+    <table>
+      <tr><th>Approach</th><th>JS Support?</th><th>TS Support?</th><th>Real Usage</th></tr>
+      <tr><td>1. Object Type</td><td class="yes">✅</td><td class="yes">✅</td><td>Interview / occasional</td></tr>
+      <tr><td>2. Inline Type</td><td class="no">❌</td><td class="yes">✅</td><td>Rarely (repetition problem)</td></tr>
+      <tr><td>3. Type Alias</td><td class="no">❌</td><td class="yes">✅</td><td>Interview-focused</td></tr>
+      <tr><td>4. Class</td><td class="yes">✅ (ES6+)</td><td class="yes">✅</td><td class="yes"><b>Most preferred — true OOP</b></td></tr>
+    </table>
+
+    <div class="box def">
+      <div class="box-title">📖 A Class = A Blueprint</div>
+      <p>Class is a <mark class="hl-yellow"><b>logical entity</b></mark> (the blueprint). Object is a <span class="teal">physical entity</span> created FROM that blueprint. One class → many independent objects.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 9. CLASS SYNTAX ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">9</div><h2>🏗️ Creating a Class</h2></div>
+
+    <div class="codeblock">
+class Person {<br>
+&nbsp;&nbsp;ssn: string;<br>
+&nbsp;&nbsp;firstName: string;<br>
+&nbsp;&nbsp;lastName: string;<br><br>
+&nbsp;&nbsp;constructor(ssn: string, firstName: string, lastName: string) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.ssn = ssn;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.firstName = firstName;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this.lastName = lastName;<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;getFullName(): string {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return this.firstName + " " + this.lastName;<br>
+&nbsp;&nbsp;}<br><br>
+&nbsp;&nbsp;getDetails(): string {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return `SSN: ${this.ssn}, Name: ${this.getFullName()}`;   <span class="cm">// method calling another method</span><br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 Class Body Uses SEMICOLONS, Not Commas!</div>
+      <p>Unlike object literals (which use <code>,</code> between key-value pairs), class properties are separated with <mark class="hl-yellow"><b>semicolons (;)</b></mark> — a common syntax mix-up when switching from objects to classes.</p>
+    </div>
+
+    <div class="box def">
+      <div class="box-title">Constructor — Not JS's Class-Name Rule!</div>
+      <p>In Java, the constructor must match the class name exactly. In TS/JS, we <mark class="hl-green"><b>always use the keyword <code>constructor</code></b></mark> — regardless of the class name.</p>
+    </div>
+  </div>
+
+  <!-- ============ 10. CONSTRUCTOR VS METHOD ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">10</div><h2>⚙️ Constructor vs Method</h2></div>
+
+    <table>
+      <tr><th>Aspect</th><th>Constructor</th><th>Method</th></tr>
+      <tr><td>Purpose</td><td>Assign data to class variables</td><td>Perform an action / return a value</td></tr>
+      <tr><td>Return value?</td><td class="no">❌ Never returns anything</td><td class="yes">✅ Can return a value</td></tr>
+      <tr><td>Invocation</td><td>Automatic, at object creation</td><td>Must be called explicitly via object</td></tr>
+      <tr><td>Name</td><td>Always <code>constructor</code></td><td>Any custom name</td></tr>
+    </table>
+
+    <div class="exam-trick">
+      <div class="box-title">🚨 "this.ssn = ssn" — Why the `this` Keyword Matters</div>
+      <div class="codeblock">
+constructor(ssn: string) {<br>
+&nbsp;&nbsp;ssn = ssn;        <span class="c2">// ❌ ambiguous, doesn't actually assign to class property</span><br>
+&nbsp;&nbsp;this.ssn = ssn;   <span class="c1">// ✅ explicitly targets the CLASS property</span><br>
+}
+      </div>
+      <p>When the parameter name and class property name are identical, <code>this.propertyName</code> is the only way to tell TypeScript "assign to the CLASS's variable", not the local parameter.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ 11. CREATING OBJECTS FROM A CLASS ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">11</div><h2>🆕 Creating Objects from a Class — `new` Keyword</h2></div>
+
+    <div class="codeblock">
+let person1 = new Person("111", "John", "Kennedy");<br>
+let person2 = new Person("222", "David", "DV");<br>
+let person3 = new Person("333", "Scott", "Smith");<br><br>
+console.log(person1.getDetails());  <span class="cm">// SSN: 111, Name: John Kennedy</span><br>
+console.log(person2.getDetails());  <span class="cm">// SSN: 222, Name: David DV</span>
+    </div>
+
+    <div class="box tip">
+      <div class="box-title">📖 The Golden Rule of Objects</div>
+      <p><mark class="hl-yellow"><b>Every object gets its OWN independent copy</b></mark> of the class's variables, constructor, and methods. person1, person2, person3 are <span class="u">completely separate</span> — changing one never affects another, even though all three were built from the same class blueprint.</p>
+    </div>
+
+    <div class="sticky yellow" style="margin:10px auto;"><div class="pin"></div><b>Memory Trick 🧠</b><br>Class = cookie cutter 🍪. Objects = individual cookies — same shape, but each one is separate and edible on its own!</div>
+  </div>
+
+  <!-- ============ 12. EXAM-TRICK ZONE ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">12</div><h2>⚡ Exam-Trick & Frequently Tested Points</h2></div>
+
+    <div class="exam-trick">
+      <div class="box-title">Trick 1 — "What's the definition of an object in TS/JS specifically?"</div>
+      <p>A collection of key-value pairs — not just "variables and methods" like Java/Python. This extra framing is TS/JS-specific.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 2 — "Why does explicit `: object` typing break property access?"</div>
+      <p>TypeScript's generic <code>object</code> type doesn't know about your specific keys — so direct dot access on named properties is disallowed. Skip the annotation to rely on inference instead.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 3 — "What problem does type alias solve over inline type objects?"</div>
+      <p>Eliminates repeating the same structure for every new object — define once with <code>type</code>, reuse for unlimited objects.</p>
+    </div>
+    <div class="exam-trick">
+      <div class="box-title">Trick 4 — "Constructor vs method — 3 key differences?"</div>
+      <p>Constructor: never returns a value, runs automatically on object creation, always named <code>constructor</code>. Method: can return, must be called explicitly, custom name.</p>
+    </div>
+  </div>
+
+  <!-- ============ 13. QUICK REVISION ============ -->
+  <div class="sheet">
+    <div class="sec-head"><div class="sec-num">13</div><h2>🔁 Quick Revision Summary</h2></div>
+
+    <div class="sticky-wrap">
+      <div class="sticky yellow"><div class="pin"></div>Object = properties + behavior = key-value pairs in TS/JS</div>
+      <div class="sticky blue"><div class="pin"></div>4 ways: object type, inline type, type alias, class</div>
+      <div class="sticky pink"><div class="pin"></div>Access via dot or bracket notation; inside methods use this.prop</div>
+      <div class="sticky orange"><div class="pin"></div>Type alias solves the "repeat structure" problem of inline type</div>
+      <div class="sticky yellow"><div class="pin"></div>Intersection (&) combines multiple types into one</div>
+      <div class="sticky blue"><div class="pin"></div>Class = blueprint (logical). Object = instance (physical).</div>
+      <div class="sticky pink"><div class="pin"></div>Constructor auto-runs on `new`, never returns, uses this.x = x</div>
+      <div class="sticky orange"><div class="pin"></div>Every object gets its own independent copy of everything</div>
+    </div>
+  </div>
+
+  <!-- ============ 14. FINAL MEMORY SHEET ============ -->
+  <div class="sheet memsheet">
+    <div class="sec-head"><div class="sec-num">★</div><h2>Final One-Page Memory Sheet</h2></div>
+
+    <div class="mem-grid">
+      <div class="mem-block">
+        <h4>📦 What is an Object</h4>
+        <p style="margin:0;">Properties + behavior. In TS/JS specifically: a collection of key-value pairs.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🛠️ 4 Creation Approaches</h4>
+        <p style="margin:0;">Object type (direct), inline type (structure+assign), type alias (reusable), class (true OOP, preferred).</p>
+      </div>
+      <div class="mem-block">
+        <h4>🔑 Access &amp; Modify</h4>
+        <p style="margin:0;">obj.key or obj["key"]. Inside methods, always this.propertyName.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🧬 Intersection Types</h4>
+        <p style="margin:0;">TypeA & TypeB merges all properties from both into a new combined type.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🏗️ Class Basics</h4>
+        <p style="margin:0;">Properties separated by semicolons. Constructor keyword (not class name) assigns data via this.x = x.</p>
+      </div>
+      <div class="mem-block">
+        <h4>🆕 Objects from Class</h4>
+        <p style="margin:0;">new ClassName(args) creates an independent object — own copy of every variable/method.</p>
+      </div>
+    </div>
+
+    <div class="footer-note">✨ "A class is the recipe. Every object is its own dish — made the same way, but separate." ✨</div>
+  </div>
+
+  <div class="footer-note">— End of Day 12 Notes • Next up: Deep Dive into Classes — Static Keyword, More on Constructors 📚 —</div>
+
+</div>
+</body>
+</html>
